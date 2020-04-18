@@ -2,25 +2,39 @@
 #include <GL/glut.h>
 #include <GLFW/glfw3.h>
 #include <chrono>
+#include <fstream>
 #include <iostream>
 #include <math.h>
-#include <fstream>
+#include <sstream>
 
 using namespace std;
 
-class Shape{
-	public:
-	virtual void readInput(ifstream fin) = 0;
-	virtual void draw(int option) = 0;
+class Shape {
+protected:
+	stringstream ss;
+
+public:
+	Shape(){};
+	~Shape(){};
+	void convert(ifstream &fin)
+	{
+		string line;
+		getline(fin, line);
+		ss = stringstream(line);
+	}
+	virtual void readInput() = 0;
+	virtual void draw() = 0;
 };
 
 class Line : public Shape {
 private:
-	int x1, y1, x2, y2;
+	int x1, y1, x2, y2, option;
 
 public:
-	Line(int a, int b, int c, int d)
-		: x1(a), y1(b), x2(c), y2(d){};
+	// Line(int a, int b, int c, int d)
+	// 	: x1(a), y1(b), x2(c), y2(d){};
+	Line(){};
+	~Line(){};
 
 	void drawLineDDA()
 	{
@@ -56,21 +70,25 @@ public:
 		}
 	}
 
-	void readInput(ifstream fin) {
-		fin >> x1 >> y1 >> x2 >> y2;
+	void readInput()
+	{
+		ss >> option >> x1 >> y1 >> x2 >> y2;
 	}
 
-	void draw(int option) {
+	void draw()
+	{
+		glBegin(GL_POINTS);
 		if (option == 0) {
 			drawLineDDA();
 		}
 		else {
 			drawLineBresenham();
 		}
+		glEnd();
 	}
 };
 
-class Circle {
+class Circle : public Shape {
 private:
 	int xt, yt, r;
 
@@ -94,10 +112,15 @@ private:
 	}
 
 public:
-	Circle(int a, int b, int c)
-		: xt(a), yt(b), r(c){};
+	Circle(){};
+	~Circle(){};
 
-	void draw(int option)
+	void readInput()
+	{
+		ss >> xt >> yt >> r;
+	}
+
+	void draw()
 	{
 		int x = 0,
 			y = r,
@@ -148,9 +171,30 @@ void renderScene(void)
 	glColor3f(1.0, 0.0, 0.0);
 	glPointSize(1.0);
 
-	auto start = chrono::high_resolution_clock::now();
-	auto end = chrono::high_resolution_clock::now();
-	cout << "The time to draw an eclipse with MidPoint algorithm is " << chrono::duration_cast<chrono::microseconds>(end - start).count() << " ms\n";
+	ifstream fin;
+	fin.open("INP.txt");
+	string geometricShape;
+	Shape *shape = NULL;
+	while (getline(fin, geometricShape)) {
+		if (shape != NULL)
+			delete shape;
+
+		if (geometricShape == "line") {
+			shape = new Line();
+		}
+		else {
+			shape = new Circle();
+		}
+
+		shape->convert(fin);
+		shape->readInput();
+		auto start = chrono::high_resolution_clock::now();
+		shape->draw();
+		auto end = chrono::high_resolution_clock::now();
+		cout << "The time to draw a/an " << geometricShape << " is " << chrono::duration_cast<chrono::microseconds>(end - start).count() << " ms\n";
+	}
+
+	fin.close();
 
 	glFlush();
 }
