@@ -19,8 +19,14 @@ void renderScene(void)
 		if (geometricShape == "line") {
 			shape = new Line();
 		}
-		else {
+		else if (geometricShape == "circle") {
 			shape = new Circle();
+		}
+		else if (geometricShape == "ellipse") {
+			shape = new Ellipse();
+		}
+		else {
+			printf("Invalid shape\n");
 		}
 
 		shape->convert(fin);

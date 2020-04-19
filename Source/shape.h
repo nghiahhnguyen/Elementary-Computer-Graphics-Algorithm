@@ -36,6 +36,10 @@ protected:
 public:
 	Shape(){};
 	~Shape(){};
+	virtual void readInput() = 0;
+	virtual void draw() = 0;
+	virtual void drawOpenGL(vector<int> &results) = 0;
+
 	void convert(ifstream &fin)
 	{
 		string line;
@@ -58,11 +62,8 @@ public:
 		}
 		return loss;
 	}
-	virtual void readInput() = 0;
-	virtual void draw() = 0;
-    virtual void drawOpenGL(vector<int>& results) = 0;
 
-    // calculate the loss between my implementation and OpenGL
+	// calculate the loss between my implementation and OpenGL
 	void calculateDistance(vector<Point> pointsList)
 	{
 
@@ -93,9 +94,9 @@ public:
 						isCorrectPoint = false;
 				}
 				if (isCorrectPoint) {
-                    Point correctPoint = Point(i, j);
+					Point correctPoint = Point(i, j);
 					correctPointsList.push_back(correctPoint);
-                    printf("%d %d\n", correctPoint.getX(), correctPoint.getY());
+					printf("%d %d\n", correctPoint.getX(), correctPoint.getY());
 				}
 			}
 		}
@@ -250,19 +251,78 @@ public:
 		}
 	}
 
-    // draw the OpenGL implementation
+	// draw the OpenGL implementation
 	void drawOpenGL(vector<int> &results)
 	{
 	}
 };
 
-class Ellipse {
+class Ellipse : public Shape {
 private:
 	int xt, yt, a, b;
 
 public:
+	Ellipse() {}
 	Ellipse(int xt, int yt, int a, int b)
 		: xt(xt), yt(yt), a(a), b(b) {}
+
+	void readInput()
+	{
+		ss >> xt >> yt >> a >> b;
+	}
+
+	void drawCorrespondingPoints(int x, int y)
+	{
+		glBegin(GL_POINTS);
+		glVertex2i(xt + x, yt + y);
+		glVertex2i(xt + x, yt - y);
+		glVertex2i(xt - x, yt + y);
+		glVertex2i(xt - x, yt - y);
+		glEnd();
+	}
+
+	void draw()
+	{
+		int x = 0, y = b;
+		double dx = 2 * b * b * x,
+			   dy = 2 * a * a * y,
+			   p1 = b * b - a * a * b + 0.25 * a * a;
+
+		// run for region 1 first (dx/dy < 1)
+		while (dx < dy) {
+			drawCorrespondingPoints(x, y);
+			if (p1 >= 0) {
+				++x, --y;
+				dx += (2 * b * b);
+				dy -= (2 * a * a);
+				p1 += (dx - dy + b * b);
+			}
+			else {
+				++x;
+				dx += (2 * b * b);
+				p1 += (dx + b * b);
+			}
+		}
+
+		// then run for region 2 (dx/dy >= 1)
+		double p2 = b * b * (x + 0.5) * (x + 0.5) + a * a * (y - 1) * (y - 1) - a * a * b * b;
+		while (y >= 0) {
+			drawCorrespondingPoints(x, y);
+			if (p2 <= 0) {
+				--y, ++x;
+				dx += (2 * b * b);
+				dy -= (2 * a * a);
+				p2 += (dx - dy + a * a);
+			}
+			else {
+				--y;
+				dy -= (2 * a * a);
+				p2 += (a * a - dy);
+			}
+		}
+	}
+
+	void drawOpenGL(vector<int> &results){};
 };
 
 class Parabola {
