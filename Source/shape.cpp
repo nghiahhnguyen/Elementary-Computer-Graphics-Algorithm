@@ -41,13 +41,13 @@ int main(int argc, char **argv)
 
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_SINGLE | GLUT_RGBA);
-	glutInitWindowSize(1640, 1640);   // set the size of the window
+	glutInitWindowSize(640, 480);   // set the size of the window
 	glutInitWindowPosition(10, 10); // the position of the top-left of window
 	glutCreateWindow("OpenGL Drawing shapes");
 	glClearColor(0.0, 0.0, 0.0, 0.0);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluOrtho2D(0.0, 1640.0, 0.0, 1640.0);
+	gluOrtho2D(0.0, 640.0, 0.0, 480.0);
 	// register callbacks
 	glutDisplayFunc(renderScene);
 	glutMainLoop();
