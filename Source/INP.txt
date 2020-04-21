@@ -8,3 +8,5 @@ ellipse
 100 200 50 25
 parabola
 100 300 9
+hyperbola
+400 300 20 10

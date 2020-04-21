@@ -382,7 +382,8 @@ public:
 
 class Hyperbola : public Shape {
 private:
-	int xt, yt, a, b;
+	int xt, yt, a, b,
+		range = 50;
 
 public:
 	void readInput()
@@ -394,27 +395,54 @@ public:
 	{
 		glBegin(GL_POINTS);
 		glVertex2i(xt + x, yt + y);
+		glVertex2i(xt + x, yt - y);
 		glVertex2i(xt - x, yt + y);
+		glVertex2i(xt - x, yt - y);
 		glEnd();
 	}
 
 	void draw()
 	{
-		int error = xt * xt + xt - 4 * a * (yt + 1);
-		int x = xt,
-			y = yt;
-		for (int i = 0; i < 100; ++i) {
-			drawCorrespondingPoints(x - xt, y - yt);
-			if (error < 0) {
-				++y;
-				error += (2 * x + 2 - 4 * a);
+		const int sqrA = a * a,
+				  sqrB = b * b,
+				  twoSqrA = sqrA << 1,
+				  twoSqrB = sqrB << 1,
+				  fourSqrA = twoSqrA << 1,
+				  fourSqrB = twoSqrB << 1,
+				  halfSqrA = sqrA >> 1,
+				  halfSqrB = sqrB >> 1;
+		int x = a,
+			y = 0,
+			dx = fourSqrB * (x + 1),
+			dy = fourSqrA,
+			p = twoSqrA - sqrB * (1 + 2 * a) + halfSqrB;
+
+		while (p < dx and y <= range) {
+			drawCorrespondingPoints(x, y);
+			if (p >= 0) {
+				p -= dx;
 				++x;
+				dx += fourSqrB;
 			}
-			else {
-				++y;
-				error += (-4 * a);
-			}
+			p += (twoSqrA + dy);
+			++y;
+			dy += fourSqrA;
 		}
+
+		p = p - (dx + dy) >> 1 + sqrA + sqrB - halfSqrA - halfSqrB;
+		// region 2
+		if (a > b)
+			while (y <= range) {
+				drawCorrespondingPoints(x, y);
+				if (p <= 0) {
+					p += dy;
+					++y;
+					dy += fourSqrA;
+				}
+				p = p - twoSqrB - dx;
+				++x;
+				dx += fourSqrB;
+			}
 	}
 
 	void drawOpenGL(vector<int> &results){};

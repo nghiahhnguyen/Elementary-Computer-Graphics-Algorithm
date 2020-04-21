@@ -28,6 +28,9 @@ void renderScene(void)
 		else if (geometricShape == "parabola") {
 			shape = new Parabola();
 		}
+		else if (geometricShape == "hyperbola") {
+			shape = new Hyperbola();
+		}
 		else {
 			printf("Invalid shape\n");
 			fin.close();
