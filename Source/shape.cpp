@@ -25,8 +25,13 @@ void renderScene(void)
 		else if (geometricShape == "ellipse") {
 			shape = new Ellipse();
 		}
+		else if (geometricShape == "parabola") {
+			shape = new Parabola();
+		}
 		else {
 			printf("Invalid shape\n");
+			fin.close();
+			return;
 		}
 
 		shape->convert(fin);

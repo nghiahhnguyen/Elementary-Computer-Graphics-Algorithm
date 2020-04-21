@@ -325,16 +325,97 @@ public:
 	void drawOpenGL(vector<int> &results){};
 };
 
-class Parabola {
+// Suppose that the parabola is symmetric around the X-axis
+// The equation is y^2 = 2px, let error = y^2 - 2 px
+class Parabola : public Shape {
 private:
 	int xt, yt, p;
+	int range = 100; // the range of x for one side of the parabola
 
 public:
+	void readInput()
+	{
+		ss >> xt >> yt >> p;
+	}
+
+	void drawCorrespondingPoints(int x, int y)
+	{
+		glBegin(GL_POINTS);
+		glVertex2i(xt + x, yt + y);
+		glVertex2i(xt + x, yt - y);
+		glEnd();
+	}
+
+	void draw()
+	{
+		int d = 1 - p;
+		int x = 0,
+			y = 0,
+			p2 = 2 * p,
+			p4 = 2 * p2;
+
+		// first region
+		while (y < p && x <= range) {
+			drawCorrespondingPoints(x, y);
+			if (d >= 0) {
+				++x;
+				d -= p2;
+			}
+			++y;
+			d += (2 * y + 1);
+		}
+
+		// second region
+		while (x <= range) {
+			drawCorrespondingPoints(x, y);
+			if (d <= 0) {
+				++y;
+				d += 4 * y;
+			}
+			x++;
+			d -= p4;
+		}
+	}
+
+	void drawOpenGL(vector<int> &results){};
 };
 
-class Hyperbola {
+class Hyperbola : public Shape {
 private:
 	int xt, yt, a, b;
 
 public:
+	void readInput()
+	{
+		ss >> xt >> yt >> a >> b;
+	}
+
+	void drawCorrespondingPoints(int x, int y)
+	{
+		glBegin(GL_POINTS);
+		glVertex2i(xt + x, yt + y);
+		glVertex2i(xt - x, yt + y);
+		glEnd();
+	}
+
+	void draw()
+	{
+		int error = xt * xt + xt - 4 * a * (yt + 1);
+		int x = xt,
+			y = yt;
+		for (int i = 0; i < 100; ++i) {
+			drawCorrespondingPoints(x - xt, y - yt);
+			if (error < 0) {
+				++y;
+				error += (2 * x + 2 - 4 * a);
+				++x;
+			}
+			else {
+				++y;
+				error += (-4 * a);
+			}
+		}
+	}
+
+	void drawOpenGL(vector<int> &results){};
 };
