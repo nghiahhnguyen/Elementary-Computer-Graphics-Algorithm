@@ -46,6 +46,8 @@ public:
 
 	void drawOpenGLWithClock(vector<int> &results)
 	{
+		u_char testColor[3] = {255, 255, 255};
+		glColor3f(testColor[0], testColor[1], testColor[2]);
 		auto start = chrono::high_resolution_clock::now();
 		this->drawOpenGL(results);
 		auto end = chrono::high_resolution_clock::now();
@@ -136,20 +138,20 @@ public:
 	Line(){};
 	~Line(){};
 
-	vector<Point> drawLineDDA()
+	void drawLineDDA()
 	{
 		double dy = y2 - y1,
 			   dx = x2 - x1;
 		double m = 1.0 * dy / dx;
 		double x = x1, y = y1;
-		vector<Point> pointsList;
+		// vector<Point> pointsList;
 		while (x <= x2) {
-			glVertex3f(x, round(y), 0);
-			pointsList.push_back(Point(x, round(y)));
+			glVertex2i(x, round(y));
+			// pointsList.push_back(Point(x, round(y)));
 			++x;
 			y += m;
 		}
-		return pointsList;
+		// return pointsList;
 	}
 
 	void drawLineBresenham()
@@ -182,12 +184,12 @@ public:
 	void drawOpenGL(vector<int> &results)
 	{
 		// move the test image above the line
-		verticalOffset = y2 - y1 + 5;
+		verticalOffset = y2 - y1 + 100;
 		int testX1 = x1, testY1 = y1 + verticalOffset, testX2 = x2, testY2 = y2 + verticalOffset;
 
 		glBegin(GL_LINES);
-		glVertex2f(testX1, testY1);
-		glVertex2f(testX2, testY2);
+		glVertex2i(testX1, testY1);
+		glVertex2i(testX2, testY2);
 		glEnd();
 
 		results.push_back(testX1);
@@ -201,7 +203,7 @@ public:
 		glBegin(GL_POINTS);
 		vector<Point> pointsList;
 		if (option == 0) {
-			pointsList = drawLineDDA();
+			drawLineDDA();
 		}
 		else {
 			drawLineBresenham();
@@ -266,6 +268,19 @@ public:
 	// draw the OpenGL implementation
 	void drawOpenGL(vector<int> &results)
 	{
+		verticalOffset = yt + r + 100;
+		int newXt = xt, newYt = yt + verticalOffset;
+		int testX1 = newXt - r, testY1 = newYt - r, testX2 = newXt + r, testY2 = newYt + r;
+
+		glBegin(GL_LINE_LOOP);
+		int numSegments = 100;
+		for (int angle = 0; angle < 360; angle += 360 / numSegments) {
+			float theta = angle * 3.14159 / 180,
+				  x = r * cosf(theta),
+				  y = r * sinf(theta);
+			glVertex2f(newXt + int(round(x)), newYt + int(round(y)));
+		}
+		glEnd();
 	}
 };
 

@@ -5,7 +5,6 @@ void renderScene(void)
 {
 
 	glClear(GL_COLOR_BUFFER_BIT);
-	glColor3f(1.0, 0.0, 0.0);
 	glPointSize(1.0);
 
 	ifstream fin;
@@ -13,6 +12,8 @@ void renderScene(void)
 	string geometricShape;
 	Shape *shape = NULL;
 	while (getline(fin, geometricShape)) {
+		glColor3f(1.0, 0.0, 0.0);
+
 		if (shape != NULL)
 			delete shape;
 

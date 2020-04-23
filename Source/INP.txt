@@ -3,7 +3,7 @@ line
 line
 1 1 400 100 500 150
 circle
-0 100 100 50
+1 100 100 50
 ellipse
 0 650 150 50 25
 parabola
