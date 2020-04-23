@@ -9,34 +9,39 @@ void renderScene(void)
 
 	ifstream fin;
 	fin.open("INP.txt");
+	// freopen("INP.txt", "r", stdin);
+	int object;
 	string geometricShape;
 	Shape *shape = NULL;
-	while (getline(fin, geometricShape)) {
+	while (fin >> object) {
 		glColor3f(1.0, 0.0, 0.0);
 
 		if (shape != NULL)
 			delete shape;
 
-		if (geometricShape == "line") {
-			shape = new Line();
+		if (object == 0) {
+			shape = new Line(0);
+			geometricShape = "line";
 		}
-		else if (geometricShape == "circle") {
+		else if (object == 1) {
+			shape = new Line(1);
+			geometricShape = "line";
+		}
+		else if (object == 2) {
 			shape = new Circle();
+			geometricShape = "circle";
 		}
-		else if (geometricShape == "ellipse") {
+		else if (object == 3) {
 			shape = new Ellipse();
+			geometricShape = "ellipse";
 		}
-		else if (geometricShape == "parabola") {
+		else if (object == 4) {
 			shape = new Parabola();
+			geometricShape = "parabola";
 		}
-		else if (geometricShape == "hyperbola") {
+		else if (object == 5) {
 			shape = new Hyperbola();
-		}
-		else if (geometricShape.substr(0, 4) == "skip") {
-			// consume the line but do nothing
-			shape = new Line();
-			shape->convert(fin);
-			continue;
+			geometricShape = "hyperbola";
 		}
 		else {
 			printf("Invalid shape\n");
@@ -44,28 +49,22 @@ void renderScene(void)
 			return;
 		}
 
-		enum Option {
-			ORIGINAL,
-			ADD_OPENGL_IMPLEMENTATION,
-			ADD_OPENGL_IMPLEMENTATION_CALCULATION
-		};
 
-		shape->convert(fin);
-		shape->readInput();
+		shape->readInput(fin);
 
 		auto start = chrono::high_resolution_clock::now();
 		shape->draw();
 		auto end = chrono::high_resolution_clock::now();
 		cout << "The time to draw a/an " << geometricShape << " is " << chrono::duration_cast<chrono::microseconds>(end - start).count() << " ms\n";
 
-		if (shape->getOption() == ADD_OPENGL_IMPLEMENTATION) {
-			vector<int> results;
-			shape->drawOpenGLWithClock(results);
-		}
-		else if (shape->getOption() == ADD_OPENGL_IMPLEMENTATION_CALCULATION) {
-			vector<Point> pointsList;
-			shape->calculateDistance(pointsList);
-		}
+		// if (shape->getOption() == ADD_OPENGL_IMPLEMENTATION) {
+		// 	vector<int> results;
+		// 	shape->drawOpenGLWithClock(results);
+		// }
+		// else if (shape->getOption() == ADD_OPENGL_IMPLEMENTATION_CALCULATION) {
+		// 	vector<Point> pointsList;
+		// 	shape->calculateDistance(pointsList);
+		// }
 	}
 	cout << "================\n\nEnd of a renderScence call.\n\n";
 	fin.close();

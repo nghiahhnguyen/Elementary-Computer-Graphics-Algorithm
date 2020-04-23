@@ -31,14 +31,14 @@ public:
 
 class Shape {
 protected:
-	stringstream ss;
+	// stringstream ss;
 	int option = 0,
 		verticalOffset;
 
 public:
 	Shape(){};
 	~Shape(){};
-	virtual void readInput() = 0;
+	virtual void readInput(ifstream& fin) = 0;
 	virtual void draw() = 0;
 	virtual void drawOpenGL(vector<int> &results) = 0;
 
@@ -54,13 +54,13 @@ public:
 		cout << "The time to draw that shape using OpenGL implementation is " << chrono::duration_cast<chrono::microseconds>(end - start).count() << " ms\n";
 	}
 
-	void convert(ifstream &fin)
-	{
-		string line;
-		getline(fin, line);
-		ss = stringstream(line);
-		ss >> option;
-	}
+	// void convert(ifstream &fin)
+	// {
+	// 	string line;
+	// 	getline(fin, line);
+	// 	ss = stringstream(line);
+	// 	ss >> option;
+	// }
 
 	unsigned long long calculateDistanceVector(vector<Point> l1, vector<Point> l2)
 	{
@@ -136,6 +136,8 @@ public:
 	// Line(int a, int b, int c, int d)
 	// 	: x1(a), y1(b), x2(c), y2(d){};
 	Line(){};
+	Line(int option)
+		: option(option){};
 	~Line(){};
 
 	void drawLineDDA()
@@ -175,9 +177,9 @@ public:
 		}
 	}
 
-	void readInput()
+	void readInput(ifstream& fin)
 	{
-		ss >> option >> x1 >> y1 >> x2 >> y2;
+		fin >> x1 >> y1 >> x2 >> y2;
 	}
 
 	// draw the OpenGL implementation
@@ -240,9 +242,9 @@ public:
 	Circle(){};
 	~Circle(){};
 
-	void readInput()
+	void readInput(ifstream& fin)
 	{
-		ss >> xt >> yt >> r;
+		fin >> xt >> yt >> r;
 	}
 
 	void draw()
@@ -278,7 +280,7 @@ public:
 			float theta = angle * 3.14159 / 180,
 				  x = r * cosf(theta),
 				  y = r * sinf(theta);
-			glVertex2f(newXt + int(round(x)), newYt + int(round(y)));
+			glVertex2f(newXt + x, newYt + y);
 		}
 		glEnd();
 	}
@@ -293,9 +295,9 @@ public:
 	Ellipse(int xt, int yt, int a, int b)
 		: xt(xt), yt(yt), a(a), b(b) {}
 
-	void readInput()
+	void readInput(ifstream& fin)
 	{
-		ss >> xt >> yt >> a >> b;
+		fin >> xt >> yt >> a >> b;
 	}
 
 	void drawCorrespondingPoints(int x, int y)
@@ -349,7 +351,22 @@ public:
 		}
 	}
 
-	void drawOpenGL(vector<int> &results){};
+	void drawOpenGL(vector<int> &results)
+	{
+		verticalOffset = yt + b + 100;
+		int newXt = xt, newYt = yt + verticalOffset;
+		int testX1 = newXt - a, testY1 = newYt - b, testX2 = newXt + a, testY2 = newYt + b;
+
+		glBegin(GL_LINE_LOOP);
+		int numSegments = 100;
+		for (int angle = 0; angle < 360; angle += 360 / numSegments) {
+			float theta = angle * 3.14159 / 180,
+				  x = a * cosf(theta),
+				  y = b * sinf(theta);
+			glVertex2f(newXt + x, newYt + y);
+		}
+		glEnd();
+	};
 };
 
 // Suppose that the parabola is symmetric around the X-axis
@@ -360,9 +377,9 @@ private:
 	int range = 100; // the range of x for one side of the parabola
 
 public:
-	void readInput()
+	void readInput(ifstream& fin)
 	{
-		ss >> xt >> yt >> p;
+		fin >> xt >> yt >> p;
 	}
 
 	void drawCorrespondingPoints(int x, int y)
@@ -413,9 +430,9 @@ private:
 		range = 50;
 
 public:
-	void readInput()
+	void readInput(ifstream& fin)
 	{
-		ss >> xt >> yt >> a >> b;
+		fin >> xt >> yt >> a >> b;
 	}
 
 	void drawCorrespondingPoints(int x, int y)
