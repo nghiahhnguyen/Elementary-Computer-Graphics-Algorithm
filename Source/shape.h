@@ -32,6 +32,8 @@ public:
 class Shape {
 protected:
 	stringstream ss;
+	int option = 0,
+		verticalOffset;
 
 public:
 	Shape(){};
@@ -40,24 +42,34 @@ public:
 	virtual void draw() = 0;
 	virtual void drawOpenGL(vector<int> &results) = 0;
 
+	bool getOption() { return option; }
+
+	void drawOpenGLWithClock(vector<int> &results)
+	{
+		auto start = chrono::high_resolution_clock::now();
+		this->drawOpenGL(results);
+		auto end = chrono::high_resolution_clock::now();
+		cout << "The time to draw that shape using OpenGL implementation is " << chrono::duration_cast<chrono::microseconds>(end - start).count() << " ms\n";
+	}
+
 	void convert(ifstream &fin)
 	{
 		string line;
 		getline(fin, line);
 		ss = stringstream(line);
+		ss >> option;
 	}
 
 	unsigned long long calculateDistanceVector(vector<Point> l1, vector<Point> l2)
 	{
 		sort(l1.begin(), l1.end());
 		sort(l2.begin(), l2.end());
+		printf("Size of the points vectors: %d %d\n", int(l1.size()), int(l2.size()));
 		int length = min(int(l1.size()), int(l2.size()));
 		unsigned long long loss = 0;
 		for (int i = 0; i < length; ++i) {
-			int y1 = l1[i].getY(), y2 = l2[i].getY(), x1 = l1[i].getX(), x2 = l2[i].getX();
+			int y1 = l1[i].getY() - verticalOffset, y2 = l2[i].getY() - verticalOffset, x1 = l1[i].getX(), x2 = l2[i].getX();
 			double singleLoss = sqrt(((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2)));
-			// printf("%d %d %d %d\n", x1, y1, x2, y2);
-			// printf("%lf\n", singleLoss);
 			loss += singleLoss;
 		}
 		return loss;
@@ -170,8 +182,8 @@ public:
 	void drawOpenGL(vector<int> &results)
 	{
 		// move the test image above the line
-		int offset = y2 - y1 + 1;
-		int testX1 = x1, testY1 = y1 + offset, testX2 = x2, testY2 = y2 + offset;
+		verticalOffset = y2 - y1 + 5;
+		int testX1 = x1, testY1 = y1 + verticalOffset, testX2 = x2, testY2 = y2 + verticalOffset;
 
 		glBegin(GL_LINES);
 		glVertex2f(testX1, testY1);

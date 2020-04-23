@@ -1,3 +1,5 @@
 ./*/OpenGlApp
 OpenGlApp
 *OpenGlApp
+.vscode
+.vscode/
