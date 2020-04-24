@@ -79,6 +79,7 @@ public:
 
 		vector<int> params;
 		drawOpenGL(params);
+		printf("mid\n");
 		int testX1 = params[0],
 			testY1 = params[1],
 			testX2 = params[2],
@@ -88,7 +89,6 @@ public:
 		int height = testY2 - testY1 + 1, width = testX2 - testX1 + 1;
 		int bufferSize = height * width * 3; // 3 for RGB channels
 		u_char *buffer = new u_char[bufferSize];
-
 		// start reading
 		glReadPixels(testX1, testY1, width, height, GL_RGB, GL_UNSIGNED_BYTE, buffer);
 		vector<Point> correctPointsList;
@@ -209,7 +209,7 @@ public:
 			pointsList = drawLineBresenham();
 		}
 		glEnd();
-		calculateDistance(pointsList);
+		// calculateDistance(pointsList);
 	}
 };
 
@@ -247,6 +247,7 @@ public:
 
 	void draw()
 	{
+		vector<Point> pointsList;
 		int x = 0,
 			y = r,
 			p = 1 - r;
@@ -261,8 +262,11 @@ public:
 				--y;
 				p = p + 2 * x - 2 * y + 1;
 			}
+			pointsList.push_back(Point(x, y));
 			drawCorrespondingPoints(x, y);
 		}
+
+		calculateDistance(pointsList);
 	}
 
 	// draw the OpenGL implementation
@@ -281,6 +285,10 @@ public:
 			glVertex2f(newXt + x, newYt + y);
 		}
 		glEnd();
+		results.push_back(testX1);
+		results.push_back(testY1);
+		results.push_back(testX2);
+		results.push_back(testY2);
 	}
 };
 
