@@ -378,13 +378,14 @@ public:
 // The equation is y^2 = 2px, let error = y^2 - 2 px
 class Parabola : public Shape {
 private:
-	int xt, yt, p;
+	int xt, yt, p, f; // p is the semi-latus rectum
 	int range = 100; // the range of x for one side of the parabola
 
 public:
 	void readInput(ifstream &fin)
 	{
-		fin >> xt >> yt >> p;
+		fin >> xt >> yt >> f;
+		p = 2 * f;
 	}
 
 	void drawCorrespondingPoints(int x, int y)
