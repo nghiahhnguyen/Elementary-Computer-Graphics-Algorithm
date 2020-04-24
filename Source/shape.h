@@ -33,12 +33,12 @@ class Shape {
 protected:
 	// stringstream ss;
 	int option = 0,
-		verticalOffset;
+		verticalOffset = 100;
 
 public:
 	Shape(){};
 	~Shape(){};
-	virtual void readInput(ifstream& fin) = 0;
+	virtual void readInput(ifstream &fin) = 0;
 	virtual void draw() = 0;
 	virtual void drawOpenGL(vector<int> &results) = 0;
 
@@ -51,19 +51,12 @@ public:
 		auto start = chrono::high_resolution_clock::now();
 		this->drawOpenGL(results);
 		auto end = chrono::high_resolution_clock::now();
-		cout << "The time to draw that shape using OpenGL implementation is " << chrono::duration_cast<chrono::microseconds>(end - start).count() << " ms\n";
+		cout << "The time to draw this shape using OpenGL implementation is " << chrono::duration_cast<chrono::microseconds>(end - start).count() << " ms\n";
 	}
 
-	// void convert(ifstream &fin)
-	// {
-	// 	string line;
-	// 	getline(fin, line);
-	// 	ss = stringstream(line);
-	// 	ss >> option;
-	// }
-
-	unsigned long long calculateDistanceVector(vector<Point> l1, vector<Point> l2)
+	double calculateDistanceVector(vector<Point> l1, vector<Point> l2)
 	{
+		printf("Reach calculateDistanceVector\n");
 		sort(l1.begin(), l1.end());
 		sort(l2.begin(), l2.end());
 		printf("Size of the points vectors: %d %d\n", int(l1.size()), int(l2.size()));
@@ -71,10 +64,10 @@ public:
 		unsigned long long loss = 0;
 		for (int i = 0; i < length; ++i) {
 			int y1 = l1[i].getY() - verticalOffset, y2 = l2[i].getY() - verticalOffset, x1 = l1[i].getX(), x2 = l2[i].getX();
-			double singleLoss = sqrt(((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2)));
+			double singleLoss = ((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
 			loss += singleLoss;
 		}
-		return loss;
+		return sqrt(loss);
 	}
 
 	// calculate the loss between my implementation and OpenGL
@@ -92,7 +85,7 @@ public:
 			testY2 = params[3];
 
 		// dynamically allocate buffer for glReadPixels
-		int height = testY2 - testY1, width = testX2 - testX1;
+		int height = testY2 - testY1 + 1, width = testX2 - testX1 + 1;
 		int bufferSize = height * width * 3; // 3 for RGB channels
 		u_char *buffer = new u_char[bufferSize];
 
@@ -118,7 +111,7 @@ public:
 		// printf("%d %d\n", int(pointsList.size()), int(correctPointsList.size()));
 
 		if (int(pointsList.size()) != 0 && int(correctPointsList.size()) != 0) {
-			unsigned long long loss = calculateDistanceVector(pointsList, correctPointsList);
+			double loss = calculateDistanceVector(pointsList, correctPointsList);
 			cout << "The distance is " << loss << endl;
 		}
 
@@ -140,31 +133,34 @@ public:
 		: option(option){};
 	~Line(){};
 
-	void drawLineDDA()
+	vector<Point> drawLineDDA()
 	{
 		double dy = y2 - y1,
 			   dx = x2 - x1;
 		double m = 1.0 * dy / dx;
 		double x = x1, y = y1;
-		// vector<Point> pointsList;
+		vector<Point> pointsList;
 		while (x <= x2) {
 			glVertex2i(x, round(y));
-			// pointsList.push_back(Point(x, round(y)));
+			pointsList.push_back(Point(x, round(y)));
 			++x;
 			y += m;
 		}
-		// return pointsList;
+		return pointsList;
 	}
 
-	void drawLineBresenham()
+	vector<Point> drawLineBresenham()
 	{
+		vector<Point> pointsList;
 		int dy = y2 - y1,
 			dx = x2 - x1,
 			error = 2 * dy - dx,
 			x = x1,
 			y = y1;
-		glVertex2i(x, y);
+		// glVertex2i(x, y);
 		while (x <= x2) {
+			glVertex2i(x, y);
+			pointsList.push_back(Point(x, y));
 			if (error < 0) {
 				error += 2 * dy;
 			}
@@ -173,11 +169,11 @@ public:
 				++y;
 			}
 			++x;
-			glVertex2i(x, y);
 		}
+		return pointsList;
 	}
 
-	void readInput(ifstream& fin)
+	void readInput(ifstream &fin)
 	{
 		fin >> x1 >> y1 >> x2 >> y2;
 	}
@@ -205,13 +201,15 @@ public:
 		glBegin(GL_POINTS);
 		vector<Point> pointsList;
 		if (option == 0) {
-			drawLineDDA();
+			cout << "DDA algorithm\n";
+			pointsList = drawLineDDA();
 		}
 		else {
-			drawLineBresenham();
+			cout << "Bresenham algorithm\n";
+			pointsList = drawLineBresenham();
 		}
 		glEnd();
-		// calculateDistance(pointsList);
+		calculateDistance(pointsList);
 	}
 };
 
@@ -242,7 +240,7 @@ public:
 	Circle(){};
 	~Circle(){};
 
-	void readInput(ifstream& fin)
+	void readInput(ifstream &fin)
 	{
 		fin >> xt >> yt >> r;
 	}
@@ -295,7 +293,7 @@ public:
 	Ellipse(int xt, int yt, int a, int b)
 		: xt(xt), yt(yt), a(a), b(b) {}
 
-	void readInput(ifstream& fin)
+	void readInput(ifstream &fin)
 	{
 		fin >> xt >> yt >> a >> b;
 	}
@@ -377,7 +375,7 @@ private:
 	int range = 100; // the range of x for one side of the parabola
 
 public:
-	void readInput(ifstream& fin)
+	void readInput(ifstream &fin)
 	{
 		fin >> xt >> yt >> p;
 	}
@@ -430,7 +428,7 @@ private:
 		range = 50;
 
 public:
-	void readInput(ifstream& fin)
+	void readInput(ifstream &fin)
 	{
 		fin >> xt >> yt >> a >> b;
 	}

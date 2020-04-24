@@ -49,21 +49,16 @@ void renderScene(void)
 			return;
 		}
 
-
 		shape->readInput(fin);
 
 		auto start = chrono::high_resolution_clock::now();
 		shape->draw();
 		auto end = chrono::high_resolution_clock::now();
-		cout << "The time to draw a/an " << geometricShape << " is " << chrono::duration_cast<chrono::microseconds>(end - start).count() << " ms\n";
+		cout << "\nThe time to draw a/an " << geometricShape << " is " << chrono::duration_cast<chrono::microseconds>(end - start).count() << " ms\n";
 
-		// if (shape->getOption() == ADD_OPENGL_IMPLEMENTATION) {
+		// if (object <= 2) {
 		// 	vector<int> results;
 		// 	shape->drawOpenGLWithClock(results);
-		// }
-		// else if (shape->getOption() == ADD_OPENGL_IMPLEMENTATION_CALCULATION) {
-		// 	vector<Point> pointsList;
-		// 	shape->calculateDistance(pointsList);
 		// }
 	}
 	cout << "================\n\nEnd of a renderScence call.\n\n";
