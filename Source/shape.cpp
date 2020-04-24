@@ -56,10 +56,10 @@ void renderScene(void)
 		auto end = chrono::high_resolution_clock::now();
 		cout << "\nThe time to draw a/an " << geometricShape << " is " << chrono::duration_cast<chrono::microseconds>(end - start).count() << " ms\n";
 
-		// if (object <= 2) {
-		// 	vector<int> results;
-		// 	shape->drawOpenGLWithClock(results);
-		// }
+		if (object <= 2) {
+			vector<int> results;
+			shape->drawOpenGLWithClock(results);
+		}
 	}
 	cout << "================\n\nEnd of a renderScence call.\n\n";
 	fin.close();

@@ -79,7 +79,6 @@ public:
 
 		vector<int> params;
 		drawOpenGL(params);
-		printf("mid\n");
 		int testX1 = params[0],
 			testY1 = params[1],
 			testX2 = params[2],
@@ -142,7 +141,7 @@ public:
 		vector<Point> pointsList;
 		while (x <= x2) {
 			glVertex2i(x, round(y));
-			pointsList.push_back(Point(x, round(y)));
+			// pointsList.push_back(Point(x, round(y)));
 			++x;
 			y += m;
 		}
@@ -160,7 +159,7 @@ public:
 		// glVertex2i(x, y);
 		while (x <= x2) {
 			glVertex2i(x, y);
-			pointsList.push_back(Point(x, y));
+			// pointsList.push_back(Point(x, y));
 			if (error < 0) {
 				error += 2 * dy;
 			}
@@ -262,11 +261,11 @@ public:
 				--y;
 				p = p + 2 * x - 2 * y + 1;
 			}
-			pointsList.push_back(Point(x, y));
+			// pointsList.push_back(Point(x, y));
 			drawCorrespondingPoints(x, y);
 		}
 
-		calculateDistance(pointsList);
+		// calculateDistance(pointsList);
 	}
 
 	// draw the OpenGL implementation
