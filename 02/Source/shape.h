@@ -262,7 +262,7 @@ public:
 			p = 1 - r;
 
 		// plot(x + xt, y + yt);
-		while (x < y) {
+		while (x <= y) {
 			++x;
 			if (p < 0) {
 				p = p + 2 * x + 1;
@@ -396,6 +396,17 @@ public:
 
 	void drawFromVertices(vector<Point> &vertices)
 	{
+		Point startPoint = vertices[0],
+			  endPoint = vertices[1];
+		int horizontalSideLength = abs(startPoint.getX() - endPoint.getX()),
+			verticalSideLength = abs(startPoint.getY() - endPoint.getY()),
+			minX = min(startPoint.getX(), endPoint.getX()),
+			minY = min(startPoint.getY(), endPoint.getY());
+		a = horizontalSideLength / 2;
+		b = verticalSideLength / 2;
+		xt = minX + a;
+		yt = minY + b;
+		draw();
 	}
 };
 
