@@ -308,7 +308,7 @@ public:
 		r = sideLength / 2;
 		xt = minX + r;
 		yt = minY + r;
-		draw();
+		// draw();
 	}
 };
 
@@ -406,7 +406,7 @@ public:
 		b = verticalSideLength / 2;
 		xt = minX + a;
 		yt = minY + b;
-		draw();
+		// draw();
 	}
 };
 

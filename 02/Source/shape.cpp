@@ -14,6 +14,8 @@ enum PROGRAM_STATE {
 	DRAWING // In the middle of drawing an image
 };
 
+static vector<Shape *> shapes;
+
 class MenuHandler {
 private:
 	static int menu,
@@ -38,11 +40,13 @@ public:
 					// glPointSize(1.0);
 					glColor3f(1.0, 0.0, 0.0);
 					shape->drawFromVertices(vertices);
-					delete shape;
+					// delete shape;
+					shapes.push_back(shape);
 					programState = GLOBAL;
 					vertices.clear();
-					glFlush();
-					glutSwapBuffers();
+					glutPostRedisplay();
+					// glFlush();
+					// glutSwapBuffers();
 					// glutDetachMenu(menu);
 					// glutDestroyMenu(menu);
 				}
@@ -111,6 +115,9 @@ void renderScene(void)
 {
 	glClear(GL_COLOR_BUFFER_BIT);
 	glPointSize(1.0);
+	for (Shape *shape : shapes) {
+		shape->draw();
+	}
 	glFlush();
 	glutSwapBuffers();
 }
@@ -134,7 +141,7 @@ int main(int argc, char **argv)
 	glFlush();
 	glutSwapBuffers();
 	// // register callbacks
-	// glutDisplayFunc(renderScene); // create menu
+	glutDisplayFunc(renderScene); // create menu
 	MenuHandler *handler = new MenuHandler();
 	glutMouseFunc(handler->mouseActionHandler);
 	handler->createMenu();
