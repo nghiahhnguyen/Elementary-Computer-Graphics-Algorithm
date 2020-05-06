@@ -410,6 +410,51 @@ public:
 	}
 };
 
+class Rectangle : public Shape {
+private:
+	int x1, y1, x2, y2, height, width;
+
+public:
+	Rectangle() {}
+
+	void readInput(ifstream &fin)
+	{
+		fin >> x1 >> y1 >> x2 >> y2;
+	}
+
+	void drawLineGLLine(int startX, int startY, int endX, int endY) {
+		glBegin(GL_LINES);
+		glVertex2i(startX, startY);
+		glVertex2i(endX, endY);
+		glEnd();
+	}
+
+	void draw()
+	{
+		drawLineGLLine(x1, y1, x1, y2);
+		drawLineGLLine(x1, y1, x2, y1);
+		drawLineGLLine(x2, y2, x2, y1);
+		drawLineGLLine(x2, y2, x1, y2);
+	}
+
+	void drawOpenGL(vector<int> &results)
+	{
+	};
+
+	void drawFromVertices(vector<Point> &vertices)
+	{
+		Point startPoint = vertices[0],
+			  endPoint = vertices[1];
+		height = abs(startPoint.getY() - endPoint.getY());
+		width = abs(startPoint.getX() - endPoint.getX());
+		x1 = min(startPoint.getX(), endPoint.getX());
+		y1 = min(startPoint.getY(), endPoint.getY());
+		x2 = max(startPoint.getX(), endPoint.getX());
+		y2 = max(startPoint.getY(), endPoint.getY());
+		// draw();
+	}
+};
+
 // Suppose that the parabola is symmetric around the X-axis
 // The equation is y^2 = 2px, let error = y^2 - 2 px
 class Parabola : public Shape {

@@ -83,6 +83,11 @@ public:
 			programState = DRAWING;
 			break;
 		case DRAW_RECTANGLE:
+			printf("User chooses DRAW_RECTANGLE\n");
+			remainingClicks = 2;
+			shape = new Rectangle();
+			programState = DRAWING;
+			break;
 		case DRAW_POLYGON:
 		default:
 			break;
