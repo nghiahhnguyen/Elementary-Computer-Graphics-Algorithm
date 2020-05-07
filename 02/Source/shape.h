@@ -338,43 +338,55 @@ public:
 
 	void draw()
 	{
-		int x = 0, y = b;
-		double dx = 2 * b * b * x,
-			   dy = 2 * a * a * y,
-			   p1 = b * b - a * a * b + 0.25 * a * a;
+		// int x = 0, y = b;
+		// double dx = 2 * b * b * x,
+		// 	   dy = 2 * a * a * y,
+		// 	   p1 = b * b - a * a * b + 0.25 * a * a;
 
-		// run for region 1 first (dx/dy < 1)
-		while (dx < dy) {
-			drawCorrespondingPoints(x, y);
-			if (p1 >= 0) {
-				++x, --y;
-				dx += (2 * b * b);
-				dy -= (2 * a * a);
-				p1 += (dx - dy + b * b);
-			}
-			else {
-				++x;
-				dx += (2 * b * b);
-				p1 += (dx + b * b);
-			}
-		}
+		// // run for region 1 first (dx/dy < 1)
+		// while (dx < dy) {
+		// 	drawCorrespondingPoints(x, y);
+		// 	if (p1 >= 0) {
+		// 		++x, --y;
+		// 		dx += (2 * b * b);
+		// 		dy -= (2 * a * a);
+		// 		p1 += (dx - dy + b * b);
+		// 	}
+		// 	else {
+		// 		++x;
+		// 		dx += (2 * b * b);
+		// 		p1 += (dx + b * b);
+		// 	}
+		// }
 
-		// then run for region 2 (dx/dy >= 1)
-		double p2 = b * b * (x + 0.5) * (x + 0.5) + a * a * (y - 1) * (y - 1) - a * a * b * b;
-		while (y >= 0) {
-			drawCorrespondingPoints(x, y);
-			if (p2 <= 0) {
-				--y, ++x;
-				dx += (2 * b * b);
-				dy -= (2 * a * a);
-				p2 += (dx - dy + a * a);
-			}
-			else {
-				--y;
-				dy -= (2 * a * a);
-				p2 += (a * a - dy);
-			}
+		// // then run for region 2 (dx/dy >= 1)
+		// double p2 = b * b * (x + 0.5) * (x + 0.5) + a * a * (y - 1) * (y - 1) - a * a * b * b;
+		// while (y >= 0) {
+		// 	drawCorrespondingPoints(x, y);
+		// 	if (p2 <= 0) {
+		// 		--y, ++x;
+		// 		dx += (2 * b * b);
+		// 		dy -= (2 * a * a);
+		// 		p2 += (dx - dy + a * a);
+		// 	}
+		// 	else {
+		// 		--y;
+		// 		dy -= (2 * a * a);
+		// 		p2 += (a * a - dy);
+		// 	}
+		// }
+		int newXt = xt, newYt = yt + verticalOffset;
+		int testX1 = newXt - a, testY1 = newYt - b, testX2 = newXt + a, testY2 = newYt + b;
+
+		glBegin(GL_LINE_LOOP);
+		int numSegments = 100;
+		for (int angle = 0; angle < 360; angle += 360 / numSegments) {
+			float theta = angle * 3.14159 / 180,
+				  x = a * cosf(theta),
+				  y = b * sinf(theta);
+			glVertex2f(newXt + x, newYt + y);
 		}
+		glEnd();
 	}
 
 	void drawOpenGL(vector<int> &results)
