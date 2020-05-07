@@ -45,7 +45,7 @@ public:
 	virtual void readInput(ifstream &fin) = 0;
 	virtual void draw() = 0;
 	virtual void drawOpenGL(vector<int> &results) = 0;
-	virtual void drawFromVertices(vector<Point> &vertices) = 0;
+	virtual void updateVertices(vector<Point> &vertices) = 0;
 
 	bool getOption() { return option; }
 
@@ -122,6 +122,14 @@ public:
 		// delete buffer
 		if (buffer == NULL)
 			delete[] buffer;
+	}
+
+
+	void drawLineGLLine(int startX, int startY, int endX, int endY) {
+		glBegin(GL_LINES);
+		glVertex2i(startX, startY);
+		glVertex2i(endX, endY);
+		glEnd();
 	}
 };
 
@@ -216,7 +224,7 @@ public:
 		// calculateDistance(pointsList);
 	}
 
-	void drawFromVertices(vector<Point> &vertices)
+	void updateVertices(vector<Point> &vertices)
 	{
 	}
 };
@@ -296,7 +304,7 @@ public:
 		glEnd();
 	}
 
-	void drawFromVertices(vector<Point> &vertices)
+	void updateVertices(vector<Point> &vertices)
 	{
 		Point startPoint = vertices[0],
 			  endPoint = vertices[1];
@@ -406,7 +414,7 @@ public:
 		glEnd();
 	};
 
-	void drawFromVertices(vector<Point> &vertices)
+	void updateVertices(vector<Point> &vertices)
 	{
 		Point startPoint = vertices[0],
 			  endPoint = vertices[1];
@@ -434,12 +442,6 @@ public:
 		fin >> x1 >> y1 >> x2 >> y2;
 	}
 
-	void drawLineGLLine(int startX, int startY, int endX, int endY) {
-		glBegin(GL_LINES);
-		glVertex2i(startX, startY);
-		glVertex2i(endX, endY);
-		glEnd();
-	}
 
 	void draw()
 	{
@@ -453,7 +455,7 @@ public:
 	{
 	};
 
-	void drawFromVertices(vector<Point> &vertices)
+	void updateVertices(vector<Point> &vertices)
 	{
 		Point startPoint = vertices[0],
 			  endPoint = vertices[1];
@@ -519,7 +521,7 @@ public:
 	}
 
 	void drawOpenGL(vector<int> &results){};
-	void drawFromVertices(vector<Point> &vertices)
+	void updateVertices(vector<Point> &vertices)
 	{
 	}
 };
@@ -590,7 +592,46 @@ public:
 	}
 
 	void drawOpenGL(vector<int> &results){};
-	void drawFromVertices(vector<Point> &vertices)
+	void updateVertices(vector<Point> &vertices)
 	{
+	}
+};
+
+class Polygon : public Shape {
+private:
+	vector<Point> vertices;
+
+	void plot(int x, int y)
+	{
+		glVertex2i(x, y);
+	}
+
+public:
+	Polygon(){};
+
+	void readInput(ifstream &fin)
+	{
+	}
+
+	void draw()
+	{
+		int n = vertices.size();
+		for (int i = 1; i < n; ++i) {
+			drawLineGLLine(vertices[i - 1].getX(), vertices[i - 1].getY(), vertices[i].getX(), vertices[i].getY());
+		}
+
+		if (n > 2) {
+			drawLineGLLine(vertices[n - 1].getX(), vertices[n - 1].getY(), vertices[0].getX(), vertices[0].getY());
+		}
+	}
+
+	// draw the OpenGL implementation
+	void drawOpenGL(vector<int> &results)
+	{
+	}
+
+	void updateVertices(vector<Point> &vertices)
+	{
+		this->vertices = vertices;
 	}
 };

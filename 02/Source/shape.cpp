@@ -29,6 +29,7 @@ public:
 	{
 		switch (button) {
 		case GLUT_LEFT_BUTTON:
+			printf("Left click detected\n");
 			if (state == GLUT_UP)
 				if (remainingClicks == 0)
 					return;
@@ -36,30 +37,34 @@ public:
 				vertices.push_back(Point(x, y));
 				--remainingClicks;
 				if (remainingClicks == 0) {
-					// glClear(GL_COLOR_BUFFER_BIT);
-					// glPointSize(1.0);
 					glColor3f(1.0, 0.0, 0.0);
-					shape->drawFromVertices(vertices);
-					// delete shape;
+					shape->updateVertices(vertices);
 					shapes.push_back(shape);
 					programState = GLOBAL;
 					vertices.clear();
 					glutPostRedisplay();
-					// glFlush();
-					// glutSwapBuffers();
-					// glutDetachMenu(menu);
-					// glutDestroyMenu(menu);
 				}
 			}
 			break;
 		case GLUT_RIGHT_BUTTON:
-			// if (state == GLUT_DOWN) {
-			// 	createMenu();
-			// }
-			// else {
-			// }
+
 			break;
 		case GLUT_MIDDLE_BUTTON:
+			// if (state == GLUT_UP)
+			// 	if (remainingClicks == 0)
+			// 		return;
+
+			remainingClicks = 0;
+
+			printf("Middle click detected\n");
+			if (programState == DRAWING && state == GLUT_DOWN) {
+				glColor3f(1.0, 0.0, 0.0);
+				shape->updateVertices(vertices);
+				shapes.push_back(shape);
+				vertices.clear();
+				programState = GLOBAL;
+				glutPostRedisplay();
+			}
 			break;
 		default:
 			printf("Unknown mouse event.\n");
@@ -89,6 +94,11 @@ public:
 			programState = DRAWING;
 			break;
 		case DRAW_POLYGON:
+			printf("User chooses DRAW_POLYGON\n");
+			remainingClicks = 99999;
+			shape = new Polygon();
+			programState = DRAWING;
+			break;
 		default:
 			break;
 		}
@@ -152,5 +162,9 @@ int main(int argc, char **argv)
 	handler->createMenu();
 	glutMainLoop();
 
+	// free the dynamic memory
+	for (Shape *shape : shapes) {
+		delete shape;
+	}
 	return 0;
 }
