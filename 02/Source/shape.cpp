@@ -1,7 +1,6 @@
 
 #include "shape.h"
-#include <mutex>
-
+#include <stack>
 
 enum MENU_OPTION {
 	DRAW_CIRCLE,
@@ -10,9 +9,16 @@ enum MENU_OPTION {
 	DRAW_POLYGON
 };
 
+enum COLOR_MENU_OPTION {
+	RED,
+	GREEN,
+	BLUE
+};
+
 enum PROGRAM_STATE {
-	GLOBAL, // Nothing is selected
-	DRAWING // In the middle of drawing an image
+	GLOBAL,	  // Nothing is selected
+	DRAWING,  // In the middle of drawing an image
+	COLORING, // Before coloring
 };
 
 static vector<Shape *> shapes;
@@ -22,54 +28,37 @@ private:
 	static int menu,
 		remainingClicks,
 		programState;
+	static RGBColor fillingColor;
 	static Shape *shape;
 	static vector<Point> vertices;
 
-public:
-	static void mouseActionHandler(int button, int state, int x, int y)
+	static void floodFillColoring(int x, int y)
 	{
-		switch (button) {
-		case GLUT_LEFT_BUTTON:
-			printf("Left click detected\n");
-			if (state == GLUT_UP)
-				if (remainingClicks == 0)
-					return;
-			if (programState == DRAWING && state == GLUT_DOWN) {
-				vertices.push_back(Point(x, y));
-				--remainingClicks;
-				if (remainingClicks == 0) {
-					glColor3f(1.0, 0.0, 0.0);
-					shape->updateVertices(vertices);
-					shapes.push_back(shape);
-					programState = GLOBAL;
-					vertices.clear();
-					glutPostRedisplay();
+		RGBColor borderColor(0, 0, 0);
+		stack<pair<int, int>> S;
+		S.push({x, y});
+		while (!S.empty()) {
+			pair<int, int> top = S.top();
+			S.pop();
+			x = top.first, y = top.second;
+			cout << x << ' ' << y << endl;
+
+			if (bitMap[x][y] == fillingColor || bitMap[x][y] == borderColor) {
+				continue;
+			}
+
+			bitMap[x][y] = fillingColor;
+
+			int dx[] = {1, 0, -1, 0};
+			int dy[] = {0, 1, 0, -1};
+
+			for (int i = 0; i < 4; ++i) {
+				int newX = x + dx[i],
+					newY = y + dy[i];
+				if (1 <= newX && newX <= WIDTH && 1 <= newY && newY <= HEIGHT && bitMap[newX][newY] != fillingColor && bitMap[newX][newY] != borderColor) {
+					S.push({newX, newY});
 				}
 			}
-			break;
-		case GLUT_RIGHT_BUTTON:
-
-			break;
-		case GLUT_MIDDLE_BUTTON:
-			if (state == GLUT_UP)
-				if (remainingClicks == 0)
-					return;
-
-			remainingClicks = 0;
-
-			printf("Middle click detected\n");
-			if (programState == DRAWING && state == GLUT_DOWN) {
-				glColor3f(1.0, 0.0, 0.0);
-				shape->updateVertices(vertices);
-				shapes.push_back(shape);
-				vertices.clear();
-				programState = GLOBAL;
-				glutPostRedisplay();
-			}
-			break;
-		default:
-			printf("Unknown mouse event.\n");
-			break;
 		}
 	}
 
@@ -107,14 +96,96 @@ public:
 		return;
 	}
 
+	static void processColoringMenuEvents(int option)
+	{
+		switch (option) {
+		case RED:
+			printf("User colors with RED\n");
+			programState = COLORING;
+			fillingColor = RGBColor(255, 0, 0);
+			break;
+		case GREEN:
+			printf("User colors with GREEN\n");
+			programState = COLORING;
+			fillingColor = RGBColor(0, 255, 0);
+			break;
+		case BLUE:
+			printf("User colors with BLUE\n");
+			programState = COLORING;
+			fillingColor = RGBColor(0, 0, 255);
+			break;
+		default:
+			break;
+		}
+		glutPostRedisplay();
+		return;
+	}
+
+public:
+	static void mouseActionHandler(int button, int state, int x, int y)
+	{
+		switch (button) {
+		case GLUT_LEFT_BUTTON:
+			printf("Left click detected\n");
+			if (state == GLUT_UP)
+				if (remainingClicks == 0)
+					return;
+
+			if (programState == COLORING && state == GLUT_DOWN) {
+				floodFillColoring(x, y);
+			}
+			if (programState == DRAWING && state == GLUT_DOWN) {
+				vertices.push_back(Point(x, y));
+				--remainingClicks;
+				if (remainingClicks == 0) {
+					glColor3ub(0, 0, 0);
+					shape->updateVertices(vertices);
+					shapes.push_back(shape);
+					programState = GLOBAL;
+					vertices.clear();
+					glutPostRedisplay();
+				}
+			}
+			break;
+		case GLUT_RIGHT_BUTTON:
+
+			break;
+		case GLUT_MIDDLE_BUTTON:
+			if (state == GLUT_UP)
+				if (remainingClicks == 0)
+					return;
+
+			remainingClicks = 0;
+
+			printf("Middle click detected\n");
+			if (programState == DRAWING && state == GLUT_DOWN) {
+				glColor3ub(0, 0, 0);
+				shape->updateVertices(vertices);
+				shapes.push_back(shape);
+				vertices.clear();
+				programState = GLOBAL;
+				glutPostRedisplay();
+			}
+			break;
+		default:
+			printf("Unknown mouse event.\n");
+			break;
+		}
+	}
+
 	static void createMenu()
 	{
-		menu = glutCreateMenu(processMenuEvents);
+		int coloringMenu = glutCreateMenu(processColoringMenuEvents);
+		glutAddMenuEntry("Red", RED);
+		glutAddMenuEntry("Green", GREEN);
+		glutAddMenuEntry("Blue", BLUE);
 
+		menu = glutCreateMenu(processMenuEvents);
 		glutAddMenuEntry("Draw a circle", DRAW_CIRCLE);
 		glutAddMenuEntry("Draw an ellipse", DRAW_ELLIPSE);
 		glutAddMenuEntry("Draw a rectangle", DRAW_RECTANGLE);
 		glutAddMenuEntry("Draw a polygon", DRAW_POLYGON);
+		glutAddSubMenu("Coloring", coloringMenu);
 
 		glutAttachMenu(GLUT_RIGHT_BUTTON);
 		// glutDetachMenu(GLUT_LEFT_BUTTON);
@@ -126,6 +197,7 @@ int MenuHandler::remainingClicks = -1,
 	MenuHandler::menu = 0;
 Shape *MenuHandler::shape = NULL;
 vector<Point> MenuHandler::vertices = vector<Point>(0);
+RGBColor MenuHandler::fillingColor = RGBColor(0, 0, 0);
 
 void renderScene(void)
 {
@@ -135,24 +207,22 @@ void renderScene(void)
 		shape->draw();
 	}
 
-	// Shape* line1 = new Line(200, 200, 600, 200, 1, 0, 0);
-	// line1->draw();
-	// delete line1;
-	// Shape* line2 = new Line(200, 200, 600, 400, 1, 0, 0);
-	// line2->draw();
-	// delete line2;
-	// Shape* line3 = new Line(200, 200, 400, 600, 1, 0, 0);
-	// line3->draw();
-	// delete line3;
-	// Shape* line4 = new Line(200, 600, 400, 500, 1, 0, 0);
-	// line4->draw();
-	// delete line4;
-	// Shape* line5 = new Line(200, 600, 400, 200, 1, 0, 0);
-	// line5->draw();
-	// delete line5;
-	// Shape* line6 = new Line(200, 600, 200, 400, 1, 0, 0);
-	// line6->draw();
-	// delete line6;
+	// RGBColor tempColor;
+	// for (int i = 1; i <= WIDTH; ++i) {
+	// 	for (int j = 1; j <= HEIGHT; ++j) {
+	// 		tempColor = bitMap[i][j];
+	// 		if (int(tempColor.r) != 255 && int(tempColor.g) != 255 && int(tempColor.b) != 255)
+	// 			cout << tempColor << endl;
+	// 		// if (tempColor.r != 255 && tempColor.g != 255 && tempColor.b != 255) {
+	// 		// 	cout << tempColor.r << ' ' << tempColor.g << ' ' << tempColor.b << endl;
+	// 		// }
+	// 		int R = int(tempColor.r), G = int(tempColor.g), B = int(tempColor.b);
+	// 		glColor3ub(R, G, B);
+	// 		glBegin(GL_POINTS);
+	// 		glVertex2i(i, j);
+	// 		glEnd();
+	// 	}
+	// }
 
 	glFlush();
 	glutSwapBuffers();
@@ -177,11 +247,11 @@ int main(int argc, char **argv)
 	glFlush();
 	glutSwapBuffers();
 
-	for (int i = 0; i < HEIGHT; ++i) {
-		for (int j = 0; j < WIDTH; ++j) {
-			bitMap[i][j] = RGBColor(255, 255, 255);
-		}
-	}
+	// for (int i = 0; i < WIDTH; ++i) {
+	// 	for (int j = 0; j < HEIGHT; ++j) {
+	// 		bitMap[i + 1][j + 1] = RGBColor(255, 255, 255);
+	// 	}
+	// }
 	// register callbacks
 	glutDisplayFunc(renderScene); // create menu
 	MenuHandler *handler = new MenuHandler();

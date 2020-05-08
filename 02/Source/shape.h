@@ -17,7 +17,7 @@ class RGBColor {
 public:
 	unsigned char r, g, b;
 	RGBColor()
-		: r(0), g(0), b(0){};
+		: r(255), g(255), b(255){};
 	RGBColor(const RGBColor &other)
 	{
 		this->r = other.r;
@@ -34,7 +34,23 @@ public:
 		this->b = other.b;
 		return *this;
 	}
+
+	bool operator==(const RGBColor &other)
+	{
+		return r == other.r && g == other.g && b == other.b;
+	}
+
+	bool operator!=(const RGBColor &other)
+	{
+		return !(*this == other);
+	}
 };
+
+ostream& operator<<(ostream &os, const RGBColor &color)
+	{
+		os << int(color.r) << '/' << int(color.g) << '/' << int(color.b);
+		return os;
+	}
 
 RGBColor bitMap[WIDTH + 1][HEIGHT + 1];
 
@@ -62,6 +78,21 @@ protected:
 	RGBColor color;
 	int option = 0,
 		verticalOffset = 100;
+
+	void drawLineGLLine(int startX, int startY, int endX, int endY)
+	{
+		glBegin(GL_LINES);
+		glVertex2i(startX, startY);
+		glVertex2i(endX, endY);
+		glEnd();
+	}
+
+	void plot(int x, int y)
+	{
+		glVertex2i(x, y);
+		bitMap[x][y] = color;
+		// cout << 
+	}
 
 public:
 	Shape(){};
@@ -154,20 +185,6 @@ public:
 		if (buffer == NULL)
 			delete[] buffer;
 	}
-
-	void drawLineGLLine(int startX, int startY, int endX, int endY)
-	{
-		glBegin(GL_LINES);
-		glVertex2i(startX, startY);
-		glVertex2i(endX, endY);
-		glEnd();
-	}
-
-	void plot(int x, int y)
-	{
-		glVertex2i(x, y);
-		bitMap[x][y] = color;
-	}
 };
 
 class Line : public Shape {
@@ -183,7 +200,7 @@ public:
 		this->color = color;
 	};
 	Line(){};
-	Line& operator=(const Line &other)
+	Line &operator=(const Line &other)
 	{
 		x1 = other.x1;
 		y1 = other.y1;
@@ -704,7 +721,8 @@ public:
 		// drawLineGLLine(x1, y1, x2, y1);
 		// drawLineGLLine(x2, y2, x2, y1);
 		// drawLineGLLine(x2, y2, x1, y2);
-		cout << "Rec\n" << x1 << ' ' << y1 << ' ' << x2 << ' ' << y2 << endl;
+		cout << "Rec\n"
+			 << x1 << ' ' << y1 << ' ' << x2 << ' ' << y2 << endl;
 		Line line(x1, y1, x1, y2, color);
 		line.draw();
 		line = Line(x1, y1, x2, y1, color);
