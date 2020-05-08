@@ -90,6 +90,7 @@ protected:
 	void plot(int x, int y)
 	{
 		glVertex2i(x, y);
+		glFlush();
 		bitMap[x][y] = color;
 		// cout << 
 	}
@@ -552,7 +553,8 @@ public:
 			float theta = angle * 3.14159 / 180,
 				  x = a * cosf(theta),
 				  y = b * sinf(theta);
-			glVertex2f(newXt + x, newYt + y);
+			// glVertex2f(newXt + x, newYt + y);
+			plot(newXt + x, newYt + y);
 		}
 		glEnd();
 	};
