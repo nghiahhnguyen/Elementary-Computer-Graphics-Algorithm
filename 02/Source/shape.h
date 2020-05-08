@@ -90,8 +90,8 @@ protected:
 	void plot(int x, int y)
 	{
 		// glColor3ub(color.r, color.g, color.b);
-		glVertex2i(x, y);
-		glFlush();
+		// glVertex2i(x, y);
+		// glFlush();
 		// cout << "==\n"
 		// << bitMap[x][y] << endl;
 		// cout << color << endl;
