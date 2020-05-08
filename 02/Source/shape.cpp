@@ -2,6 +2,7 @@
 #include "shape.h"
 #include <mutex>
 
+
 enum MENU_OPTION {
 	DRAW_CIRCLE,
 	DRAW_ELLIPSE,
@@ -15,6 +16,7 @@ enum PROGRAM_STATE {
 };
 
 static vector<Shape *> shapes;
+RGBColor bitMap[HEIGHT][WIDTH];
 
 class MenuHandler {
 private:
@@ -50,9 +52,9 @@ public:
 
 			break;
 		case GLUT_MIDDLE_BUTTON:
-			// if (state == GLUT_UP)
-			// 	if (remainingClicks == 0)
-			// 		return;
+			if (state == GLUT_UP)
+				if (remainingClicks == 0)
+					return;
 
 			remainingClicks = 0;
 
@@ -139,8 +141,8 @@ void renderScene(void)
 
 int main(int argc, char **argv)
 {
-	int width = 1200,
-		height = 1080;
+	int width = WIDTH,
+		height = HEIGHT;
 	// TODO: make this singleton
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_SINGLE | GLUT_RGB);
@@ -150,7 +152,7 @@ int main(int argc, char **argv)
 	glClearColor(1, 1, 1, 1);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluOrtho2D(0.0, 1.0 * width, 1.0 * height, 0);
+	gluOrtho2D(0, width, height, 0);
 	glClear(GL_COLOR_BUFFER_BIT);
 	// glPointSize(1.0);
 	glFlush();

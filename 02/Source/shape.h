@@ -11,6 +11,8 @@
 
 using namespace std;
 
+const int WIDTH = 1200, HEIGHT = 800;
+
 struct RGBColor {
 	unsigned char r, g, b;
 };
@@ -124,8 +126,8 @@ public:
 			delete[] buffer;
 	}
 
-
-	void drawLineGLLine(int startX, int startY, int endX, int endY) {
+	void drawLineGLLine(int startX, int startY, int endX, int endY)
+	{
 		glBegin(GL_LINES);
 		glVertex2i(startX, startY);
 		glVertex2i(endX, endY);
@@ -264,13 +266,15 @@ public:
 	void draw()
 	{
 		// glColor3f(1.0, 0.0, 0.0);
-		vector<Point> pointsList;
+		// vector<Point> pointsList;
 		int x = 0,
 			y = r,
 			p = 1 - r;
 
 		// plot(x + xt, y + yt);
 		while (x <= y) {
+			// pointsList.push_back(Point(x, y));
+			drawCorrespondingPoints(x, y);
 			++x;
 			if (p < 0) {
 				p = p + 2 * x + 1;
@@ -279,8 +283,6 @@ public:
 				--y;
 				p = p + 2 * x - 2 * y + 1;
 			}
-			// pointsList.push_back(Point(x, y));
-			drawCorrespondingPoints(x, y);
 		}
 
 		// calculateDistance(pointsList);
@@ -383,8 +385,7 @@ public:
 		// 		p2 += (a * a - dy);
 		// 	}
 		// }
-		int newXt = xt, newYt = yt + verticalOffset;
-		int testX1 = newXt - a, testY1 = newYt - b, testX2 = newXt + a, testY2 = newYt + b;
+		int newXt = xt, newYt = yt;
 
 		glBegin(GL_LINE_LOOP);
 		int numSegments = 100;
@@ -426,43 +427,6 @@ public:
 		b = verticalSideLength / 2;
 		xt = minX + a;
 		yt = minY + b;
-		// draw();
-	}
-};
-
-class Rectangle : public Shape {
-private:
-	int x1, y1, x2, y2;
-
-public:
-	Rectangle() {}
-
-	void readInput(ifstream &fin)
-	{
-		fin >> x1 >> y1 >> x2 >> y2;
-	}
-
-
-	void draw()
-	{
-		drawLineGLLine(x1, y1, x1, y2);
-		drawLineGLLine(x1, y1, x2, y1);
-		drawLineGLLine(x2, y2, x2, y1);
-		drawLineGLLine(x2, y2, x1, y2);
-	}
-
-	void drawOpenGL(vector<int> &results)
-	{
-	};
-
-	void updateVertices(vector<Point> &vertices)
-	{
-		Point startPoint = vertices[0],
-			  endPoint = vertices[1];
-		x1 = min(startPoint.getX(), endPoint.getX());
-		y1 = min(startPoint.getY(), endPoint.getY());
-		x2 = max(startPoint.getX(), endPoint.getX());
-		y2 = max(startPoint.getY(), endPoint.getY());
 		// draw();
 	}
 };
@@ -597,14 +561,43 @@ public:
 	}
 };
 
+class Rectangle : public Shape {
+private:
+	int x1, y1, x2, y2;
+
+public:
+	Rectangle() {}
+
+	void readInput(ifstream &fin)
+	{
+		fin >> x1 >> y1 >> x2 >> y2;
+	}
+
+	void draw()
+	{
+		drawLineGLLine(x1, y1, x1, y2);
+		drawLineGLLine(x1, y1, x2, y1);
+		drawLineGLLine(x2, y2, x2, y1);
+		drawLineGLLine(x2, y2, x1, y2);
+	}
+
+	void drawOpenGL(vector<int> &results){};
+
+	void updateVertices(vector<Point> &vertices)
+	{
+		Point startPoint = vertices[0],
+			  endPoint = vertices[1];
+		x1 = min(startPoint.getX(), endPoint.getX());
+		y1 = min(startPoint.getY(), endPoint.getY());
+		x2 = max(startPoint.getX(), endPoint.getX());
+		y2 = max(startPoint.getY(), endPoint.getY());
+		// draw();
+	}
+};
+
 class Polygon : public Shape {
 private:
 	vector<Point> vertices;
-
-	void plot(int x, int y)
-	{
-		glVertex2i(x, y);
-	}
 
 public:
 	Polygon(){};
