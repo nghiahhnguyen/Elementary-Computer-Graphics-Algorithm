@@ -495,54 +495,55 @@ public:
 
 	void draw()
 	{
-		// int x = 0, y = b;
-		// double dx = 2 * b * b * x,
-		// 	   dy = 2 * a * a * y,
-		// 	   p1 = b * b - a * a * b + 0.25 * a * a;
+		int x = 0, y = b;
+		double dx = 2 * b * b * x,
+			   dy = 2 * a * a * y,
+			   p1 = b * b - a * a * b + 0.25 * a * a;
 
-		// // run for region 1 first (dx/dy < 1)
-		// while (dx < dy) {
-		// 	drawCorrespondingPoints(x, y);
-		// 	if (p1 >= 0) {
-		// 		++x, --y;
-		// 		dx += (2 * b * b);
-		// 		dy -= (2 * a * a);
-		// 		p1 += (dx - dy + b * b);
-		// 	}
-		// 	else {
-		// 		++x;
-		// 		dx += (2 * b * b);
-		// 		p1 += (dx + b * b);
-		// 	}
-		// }
+		// run for region 1 first (dx/dy < 1)
+		while (dx < dy) {
+			drawCorrespondingPoints(x, y);
+			if (p1 >= 0) {
+				++x, --y;
+				dx += (2 * b * b);
+				dy -= (2 * a * a);
+				p1 += (dx - dy + b * b);
+			}
+			else {
+				++x;
+				dx += (2 * b * b);
+				p1 += (dx + b * b);
+			}
+		}
 
-		// // then run for region 2 (dx/dy >= 1)
-		// double p2 = b * b * (x + 0.5) * (x + 0.5) + a * a * (y - 1) * (y - 1) - a * a * b * b;
-		// while (y >= 0) {
-		// 	drawCorrespondingPoints(x, y);
-		// 	if (p2 <= 0) {
-		// 		--y, ++x;
-		// 		dx += (2 * b * b);
-		// 		dy -= (2 * a * a);
-		// 		p2 += (dx - dy + a * a);
-		// 	}
-		// 	else {
-		// 		--y;
-		// 		dy -= (2 * a * a);
-		// 		p2 += (a * a - dy);
-		// 	}
-		// }
-		int newXt = xt, newYt = yt;
+		// then run for region 2 (dx/dy >= 1)
+		double p2 = b * b * (x + 0.5) * (x + 0.5) + a * a * (y - 1) * (y - 1) - a * a * b * b;
+		while (y >= 0) {
+			drawCorrespondingPoints(x, y);
+			if (p2 <= 0) {
+				--y, ++x;
+				dx += (2 * b * b);
+				dy -= (2 * a * a);
+				p2 += (dx - dy + a * a);
+			}
+			else {
+				--y;
+				dy -= (2 * a * a);
+				p2 += (a * a - dy);
+			}
+		}
+		// int newXt = xt, newYt = yt;
 
 		// glBegin(GL_LINE_LOOP);
-		int numSegments = 100;
-		for (int angle = 0; angle < 360; angle += 360 / numSegments) {
-			float theta = angle * 3.14159 / 180,
-				  x = a * cosf(theta),
-				  y = b * sinf(theta);
-			// glVertex2i(newXt + x, newYt + y);
-			plot(newXt + x, newYt + y);
-		}
+		// int numSegments = 100;
+		// for (int angle = 0; angle < 360; angle += 360 / numSegments) {
+		// 	float theta = angle * 3.14159 / 180,
+		// 		  x = a * cosf(theta),
+		// 		  y = b * sinf(theta);
+		// 	glVertex2i(newXt + x, newYt + y);
+		// 	bitMap[int(newXt + x)][int(newYt + y)] = color;
+		// 	// plot(newXt + x, newYt + y);
+		// }
 		// glEnd();
 	}
 
@@ -580,135 +581,6 @@ public:
 	}
 };
 
-// Suppose that the parabola is symmetric around the X-axis
-// The equation is y^2 = 2px, let error = y^2 - 2 px
-class Parabola : public Shape {
-private:
-	int xt, yt, p, f; // p is the semi-latus rectum
-	int range = 100;  // the range of x for one side of the parabola
-
-public:
-	void readInput(ifstream &fin)
-	{
-		fin >> xt >> yt >> f;
-		p = 2 * f;
-	}
-
-	void drawCorrespondingPoints(int x, int y)
-	{
-		glBegin(GL_POINTS);
-		glVertex2i(xt + x, yt + y);
-		glVertex2i(xt + x, yt - y);
-		glEnd();
-	}
-
-	void draw()
-	{
-		int d = 1 - p;
-		int x = 0,
-			y = 0,
-			p2 = 2 * p,
-			p4 = 2 * p2;
-
-		// first region
-		while (y < p && x <= range) {
-			drawCorrespondingPoints(x, y);
-			if (d >= 0) {
-				++x;
-				d -= p2;
-			}
-			++y;
-			d += (2 * y + 1);
-		}
-
-		// second region
-		while (x <= range) {
-			drawCorrespondingPoints(x, y);
-			if (d <= 0) {
-				++y;
-				d += 4 * y;
-			}
-			x++;
-			d -= p4;
-		}
-	}
-
-	void drawOpenGL(vector<int> &results){};
-	void updateVertices(vector<Point> &vertices)
-	{
-	}
-};
-
-class Hyperbola : public Shape {
-private:
-	int xt, yt, a, b,
-		range = 50;
-
-public:
-	void readInput(ifstream &fin)
-	{
-		fin >> xt >> yt >> a >> b;
-	}
-
-	void drawCorrespondingPoints(int x, int y)
-	{
-		glBegin(GL_POINTS);
-		glVertex2i(xt + x, yt + y);
-		glVertex2i(xt + x, yt - y);
-		glVertex2i(xt - x, yt + y);
-		glVertex2i(xt - x, yt - y);
-		glEnd();
-	}
-
-	void draw()
-	{
-		const int sqrA = a * a,
-				  sqrB = b * b,
-				  twoSqrA = sqrA << 1,
-				  twoSqrB = sqrB << 1,
-				  fourSqrA = twoSqrA << 1,
-				  fourSqrB = twoSqrB << 1,
-				  halfSqrA = sqrA >> 1,
-				  halfSqrB = sqrB >> 1;
-		int x = a,
-			y = 0,
-			dx = fourSqrB * (x + 1),
-			dy = fourSqrA,
-			p = twoSqrA - sqrB * (1 + 2 * a) + halfSqrB;
-
-		while (p < dx and y <= range) {
-			drawCorrespondingPoints(x, y);
-			if (p >= 0) {
-				p -= dx;
-				++x;
-				dx += fourSqrB;
-			}
-			p += (twoSqrA + dy);
-			++y;
-			dy += fourSqrA;
-		}
-
-		p = p - (dx + dy) >> 1 + sqrA + sqrB - halfSqrA - halfSqrB;
-		// region 2
-		if (a > b)
-			while (y <= range) {
-				drawCorrespondingPoints(x, y);
-				if (p <= 0) {
-					p += dy;
-					++y;
-					dy += fourSqrA;
-				}
-				p = p - twoSqrB - dx;
-				++x;
-				dx += fourSqrB;
-			}
-	}
-
-	void drawOpenGL(vector<int> &results){};
-	void updateVertices(vector<Point> &vertices)
-	{
-	}
-};
 
 class Rectangle : public Shape {
 private:
