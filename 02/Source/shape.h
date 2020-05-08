@@ -16,12 +16,27 @@ const int WIDTH = 1200, HEIGHT = 800;
 class RGBColor {
 public:
 	unsigned char r, g, b;
-	RGBColor(){};
+	RGBColor()
+		: r(0), g(0), b(0){};
+	RGBColor(const RGBColor &other)
+	{
+		this->r = other.r;
+		this->g = other.g;
+		this->b = other.b;
+	}
 	RGBColor(unsigned char r, unsigned char g, unsigned b)
 		: r(r), g(g), b(b){};
+
+	RGBColor &operator=(const RGBColor &other)
+	{
+		this->r = other.r;
+		this->g = other.g;
+		this->b = other.b;
+		return *this;
+	}
 };
 
-RGBColor bitMap[HEIGHT][WIDTH];
+RGBColor bitMap[WIDTH + 1][HEIGHT + 1];
 
 class Point {
 private:
@@ -44,12 +59,20 @@ public:
 class Shape {
 protected:
 	// stringstream ss;
+	RGBColor color;
 	int option = 0,
 		verticalOffset = 100;
 
 public:
 	Shape(){};
 	~Shape(){};
+	Shape &operator=(Shape &other)
+	{
+		this->color = other.color;
+		this->option = other.option;
+		this->verticalOffset = other.verticalOffset;
+		return *this;
+	}
 	virtual void readInput(ifstream &fin) = 0;
 	virtual void draw() = 0;
 	virtual void drawOpenGL(vector<int> &results) = 0;
@@ -139,33 +162,43 @@ public:
 		glVertex2i(endX, endY);
 		glEnd();
 	}
-};
-
-class Line : public Shape {
-private:
-	unsigned char R, G, B;
-	int x1, y1, x2, y2, option;
-
-public:
-	Line(int a, int b, int c, int d, int option = 0)
-		: x1(a), y1(b), x2(c), y2(d), option(option){};
-	Line(int a, int b, int c, int d, unsigned char R, unsigned char G, unsigned char B, int option = 0)
-		: x1(a), y1(b), x2(c), y2(d), R(R), G(G), B(B), option(option){};
-	Line(int r, int g, int b)
-		: R(r), G(g), B(b){};
-	Line(){};
-	Line(int option)
-		: option(option){};
-	~Line(){};
 
 	void plot(int x, int y)
 	{
 		glVertex2i(x, y);
-		bitMap[x][y] = RGBColor(R, G, B);
+		bitMap[x][y] = color;
 	}
+};
+
+class Line : public Shape {
+private:
+	int x1, y1, x2, y2, option = 0;
+
+public:
+	Line(int a, int b, int c, int d, int option = 0)
+		: x1(a), y1(b), x2(c), y2(d), option(option){};
+	Line(int a, int b, int c, int d, RGBColor color, int option = 0)
+		: x1(a), y1(b), x2(c), y2(d), option(option)
+	{
+		this->color = color;
+	};
+	Line(){};
+	Line& operator=(const Line &other)
+	{
+		x1 = other.x1;
+		y1 = other.y1;
+		x2 = other.x2;
+		y2 = other.y2;
+		option = other.option;
+		return *this;
+	}
+	Line(int option)
+		: option(option){};
+	~Line(){};
 
 	vector<Point> drawLineDDA()
 	{
+		cout << x1 << ' ' << y1 << ' ' << x2 << ' ' << y2 << endl;
 		double dy = y2 - y1,
 			   dx = x2 - x1;
 
@@ -173,8 +206,9 @@ public:
 		double x = x1, y = y1;
 		// vertical line
 		if (dy == 0) {
-			while (x < x2) {
+			while (x <= x2) {
 				plot(x, y);
+				// cout << x << ' ' << y << endl;
 				++x;
 			}
 			return pointsList;
@@ -183,8 +217,9 @@ public:
 		else if (dx == 0) {
 			y = min(y1, y2);
 			double end = max(y1, y2);
-			while (y < end) {
+			while (y <= end) {
 				plot(x, y);
+				// cout << x << ' ' << y << endl;
 				++y;
 			}
 			return pointsList;
@@ -277,7 +312,7 @@ public:
 
 	void draw()
 	{
-		glColor3i(R, G, B);
+		glColor3i(color.r, color.g, color.b);
 		glBegin(GL_POINTS);
 		int startX, startY, endX, endY;
 		if (x1 <= x2) {
@@ -316,14 +351,7 @@ public:
 
 class Circle : public Shape {
 private:
-	unsigned char R, G, B;
 	int xt, yt, r;
-
-	void plot(int x, int y)
-	{
-		bitMap[x][y] = RGBColor(R, G, B);
-		glVertex2i(x, y);
-	}
 
 	void drawCorrespondingPoints(int x, int y)
 	{
@@ -341,8 +369,12 @@ private:
 
 public:
 	Circle(){};
-	Circle(unsigned char R, unsigned char G, unsigned char B)
-		: R(R), G(G), B(B){};
+	Circle(RGBColor &other)
+	{
+		this->color = other;
+	};
+	// Circle(unsigned char R, unsigned char G, unsigned char B)
+	// 	: color(RGBColor(R, G, B)){};
 	~Circle(){};
 
 	void readInput(ifstream &fin)
@@ -411,26 +443,22 @@ public:
 
 class Ellipse : public Shape {
 private:
-	unsigned char R, G, B;
 	int xt, yt, a, b;
 
 public:
 	Ellipse() {}
 	Ellipse(int xt, int yt, int a, int b)
 		: xt(xt), yt(yt), a(a), b(b) {}
-
-	Ellipse(unsigned char R, unsigned char G, unsigned char B)
-		: R(R), G(G), B(B){};
+	Ellipse(RGBColor other)
+	{
+		this->color = other;
+	};
+	// Ellipse(unsigned char R, unsigned char G, unsigned char B)
+	// 	: color(RGBColor(R, G, B)){};
 
 	void readInput(ifstream &fin)
 	{
 		fin >> xt >> yt >> a >> b;
-	}
-
-	void plot(int x, int y)
-	{
-		bitMap[x][y] = RGBColor(R, G, B);
-		glVertex2i(x, y);
 	}
 
 	void drawCorrespondingPoints(int x, int y)
@@ -672,10 +700,19 @@ public:
 
 	void draw()
 	{
-		drawLineGLLine(x1, y1, x1, y2);
-		drawLineGLLine(x1, y1, x2, y1);
-		drawLineGLLine(x2, y2, x2, y1);
-		drawLineGLLine(x2, y2, x1, y2);
+		// drawLineGLLine(x1, y1, x1, y2);
+		// drawLineGLLine(x1, y1, x2, y1);
+		// drawLineGLLine(x2, y2, x2, y1);
+		// drawLineGLLine(x2, y2, x1, y2);
+		cout << "Rec\n" << x1 << ' ' << y1 << ' ' << x2 << ' ' << y2 << endl;
+		Line line(x1, y1, x1, y2, color);
+		line.draw();
+		line = Line(x1, y1, x2, y1, color);
+		line.draw();
+		line = Line(x2, y2, x2, y1, color);
+		line.draw();
+		line = Line(x2, y2, x1, y2, color);
+		line.draw();
 	}
 
 	void drawOpenGL(vector<int> &results){};
@@ -707,11 +744,17 @@ public:
 	{
 		int n = vertices.size();
 		for (int i = 1; i < n; ++i) {
-			drawLineGLLine(vertices[i - 1].getX(), vertices[i - 1].getY(), vertices[i].getX(), vertices[i].getY());
+			// drawLineGLLine(vertices[i - 1].getX(), vertices[i - 1].getY(), vertices[i].getX(), vertices[i].getY());
+			Line *line = new Line(vertices[i - 1].getX(), vertices[i - 1].getY(), vertices[i].getX(), vertices[i].getY(), color);
+			line->draw();
+			delete line;
 		}
 
 		if (n > 2) {
-			drawLineGLLine(vertices[n - 1].getX(), vertices[n - 1].getY(), vertices[0].getX(), vertices[0].getY());
+			// drawLineGLLine(vertices[n - 1].getX(), vertices[n - 1].getY(), vertices[0].getX(), vertices[0].getY());
+			Line *line = new Line(vertices[n - 1].getX(), vertices[n - 1].getY(), vertices[0].getX(), vertices[0].getY(), color);
+			line->draw();
+			delete line;
 		}
 	}
 
