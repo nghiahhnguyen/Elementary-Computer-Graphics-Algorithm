@@ -41,7 +41,7 @@ private:
 			pair<int, int> top = S.top();
 			S.pop();
 			x = top.first, y = top.second;
-			cout << x << ' ' << y << endl;
+			// cout << x << ' ' << y << endl;
 
 			if (bitMap[x][y] == fillingColor || bitMap[x][y] == borderColor) {
 				continue;
@@ -133,6 +133,8 @@ public:
 
 			if (programState == COLORING && state == GLUT_DOWN) {
 				floodFillColoring(x, y);
+				glutPostRedisplay();
+				return;
 			}
 			if (programState == DRAWING && state == GLUT_DOWN) {
 				vertices.push_back(Point(x, y));
@@ -207,22 +209,22 @@ void renderScene(void)
 		shape->draw();
 	}
 
-	// RGBColor tempColor;
-	// for (int i = 1; i <= WIDTH; ++i) {
-	// 	for (int j = 1; j <= HEIGHT; ++j) {
-	// 		tempColor = bitMap[i][j];
-	// 		if (int(tempColor.r) != 255 && int(tempColor.g) != 255 && int(tempColor.b) != 255)
-	// 			cout << tempColor << endl;
-	// 		// if (tempColor.r != 255 && tempColor.g != 255 && tempColor.b != 255) {
-	// 		// 	cout << tempColor.r << ' ' << tempColor.g << ' ' << tempColor.b << endl;
-	// 		// }
-	// 		int R = int(tempColor.r), G = int(tempColor.g), B = int(tempColor.b);
-	// 		glColor3ub(R, G, B);
-	// 		glBegin(GL_POINTS);
-	// 		glVertex2i(i, j);
-	// 		glEnd();
-	// 	}
-	// }
+	RGBColor tempColor;
+	for (int i = 1; i <= WIDTH; ++i) {
+		for (int j = 1; j <= HEIGHT; ++j) {
+			tempColor = bitMap[i][j];
+			// if (int(tempColor.r) != 255 && int(tempColor.g) != 255 && int(tempColor.b) != 255)
+			// 	cout << tempColor << endl;
+			// if (tempColor.r != 255 && tempColor.g != 255 && tempColor.b != 255) {
+			// 	cout << tempColor.r << ' ' << tempColor.g << ' ' << tempColor.b << endl;
+			// }
+			int R = int(tempColor.r), G = int(tempColor.g), B = int(tempColor.b);
+			glColor3ub(R, G, B);
+			glBegin(GL_POINTS);
+			glVertex2i(i, j);
+			glEnd();
+		}
+	}
 
 	glFlush();
 	glutSwapBuffers();

@@ -534,15 +534,16 @@ public:
 		// }
 		int newXt = xt, newYt = yt;
 
-		glBegin(GL_LINE_LOOP);
+		// glBegin(GL_LINE_LOOP);
 		int numSegments = 100;
 		for (int angle = 0; angle < 360; angle += 360 / numSegments) {
 			float theta = angle * 3.14159 / 180,
 				  x = a * cosf(theta),
 				  y = b * sinf(theta);
-			glVertex2i(newXt + x, newYt + y);
+			// glVertex2i(newXt + x, newYt + y);
+			plot(newXt + x, newYt + y);
 		}
-		glEnd();
+		// glEnd();
 	}
 
 	void drawOpenGL(vector<int> &results)
