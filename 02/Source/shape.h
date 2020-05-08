@@ -75,7 +75,7 @@ public:
 class Shape {
 protected:
 	// stringstream ss;
-	RGBColor color;
+	RGBColor color = RGBColor(0, 0, 0);
 	int option = 0,
 		verticalOffset = 100;
 
@@ -89,10 +89,14 @@ protected:
 
 	void plot(int x, int y)
 	{
+		// glColor3ub(color.r, color.g, color.b);
 		glVertex2i(x, y);
 		glFlush();
+		// cout << "==\n"
+		// << bitMap[x][y] << endl;
+		// cout << color << endl;
 		bitMap[x][y] = color;
-		// cout << 
+		// cout << bitMap[x][y] << "\n\n";
 	}
 
 public:
