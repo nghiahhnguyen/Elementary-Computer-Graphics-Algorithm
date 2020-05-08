@@ -16,7 +16,6 @@ enum PROGRAM_STATE {
 };
 
 static vector<Shape *> shapes;
-RGBColor bitMap[HEIGHT][WIDTH];
 
 class MenuHandler {
 private:
@@ -135,6 +134,26 @@ void renderScene(void)
 	for (Shape *shape : shapes) {
 		shape->draw();
 	}
+
+	// Shape* line1 = new Line(200, 200, 600, 200, 1, 0, 0);
+	// line1->draw();
+	// delete line1;
+	// Shape* line2 = new Line(200, 200, 600, 400, 1, 0, 0);
+	// line2->draw();
+	// delete line2;
+	// Shape* line3 = new Line(200, 200, 400, 600, 1, 0, 0);
+	// line3->draw();
+	// delete line3;
+	// Shape* line4 = new Line(200, 600, 400, 500, 1, 0, 0);
+	// line4->draw();
+	// delete line4;
+	// Shape* line5 = new Line(200, 600, 400, 200, 1, 0, 0);
+	// line5->draw();
+	// delete line5;
+	// Shape* line6 = new Line(200, 600, 200, 400, 1, 0, 0);
+	// line6->draw();
+	// delete line6;
+
 	glFlush();
 	glutSwapBuffers();
 }
@@ -157,7 +176,13 @@ int main(int argc, char **argv)
 	// glPointSize(1.0);
 	glFlush();
 	glutSwapBuffers();
-	// // register callbacks
+
+	for (int i = 0; i < HEIGHT; ++i) {
+		for (int j = 0; j < WIDTH; ++j) {
+			bitMap[i][j] = RGBColor(255, 255, 255);
+		}
+	}
+	// register callbacks
 	glutDisplayFunc(renderScene); // create menu
 	MenuHandler *handler = new MenuHandler();
 	glutMouseFunc(handler->mouseActionHandler);

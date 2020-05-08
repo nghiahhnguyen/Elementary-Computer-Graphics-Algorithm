@@ -13,9 +13,15 @@ using namespace std;
 
 const int WIDTH = 1200, HEIGHT = 800;
 
-struct RGBColor {
+class RGBColor {
+public:
 	unsigned char r, g, b;
+	RGBColor(){};
+	RGBColor(unsigned char r, unsigned char g, unsigned b)
+		: r(r), g(g), b(b){};
 };
+
+RGBColor bitMap[HEIGHT][WIDTH];
 
 class Point {
 private:
@@ -137,28 +143,89 @@ public:
 
 class Line : public Shape {
 private:
+	unsigned char R, G, B;
 	int x1, y1, x2, y2, option;
 
 public:
-	// Line(int a, int b, int c, int d)
-	// 	: x1(a), y1(b), x2(c), y2(d){};
+	Line(int a, int b, int c, int d, int option = 0)
+		: x1(a), y1(b), x2(c), y2(d), option(option){};
+	Line(int a, int b, int c, int d, unsigned char R, unsigned char G, unsigned char B, int option = 0)
+		: x1(a), y1(b), x2(c), y2(d), R(R), G(G), B(B), option(option){};
+	Line(int r, int g, int b)
+		: R(r), G(g), B(b){};
 	Line(){};
 	Line(int option)
 		: option(option){};
 	~Line(){};
 
+	void plot(int x, int y)
+	{
+		glVertex2i(x, y);
+		bitMap[x][y] = RGBColor(R, G, B);
+	}
+
 	vector<Point> drawLineDDA()
 	{
 		double dy = y2 - y1,
 			   dx = x2 - x1;
-		double m = 1.0 * dy / dx;
-		double x = x1, y = y1;
+
 		vector<Point> pointsList;
-		while (x <= x2) {
-			glVertex2i(x, round(y));
-			// pointsList.push_back(Point(x, round(y)));
-			++x;
-			y += m;
+		double x = x1, y = y1;
+		// vertical line
+		if (dy == 0) {
+			while (x < x2) {
+				plot(x, y);
+				++x;
+			}
+			return pointsList;
+		}
+		// horizontal line
+		else if (dx == 0) {
+			y = min(y1, y2);
+			double end = max(y1, y2);
+			while (y < end) {
+				plot(x, y);
+				++y;
+			}
+			return pointsList;
+		}
+		double m = 1.0 * dy / dx; // slope
+		cout << m << endl;
+		if (abs(m) > 0 && abs(m) < 1) {
+			double newM = abs(m);
+			while (x <= x2) {
+				int xC, yC;
+				if (m > 0)
+					xC = x, yC = round(y);
+				else
+					xC = x, yC = 2 * y1 - round(y);
+				// cout << xC << ' ' << yC << endl;
+				plot(xC, yC);
+				++x;
+				y += newM;
+			}
+		}
+		else if (m > 1) {
+			double newM = abs(1.0 * dx / dy);
+			while (y <= y2) {
+				int xC, yC;
+				xC = round(x), yC = y;
+				plot(xC, yC);
+				++y;
+				x += newM;
+			}
+		}
+		else if (m < -1) {
+			double newM = abs(1.0 * dx / dy);
+			double end = 2 * y1 - y2;
+			while (y <= end) {
+				int xC, yC;
+				xC = round(x), yC = 2 * y1 - y;
+				// cout << xC << ' ' << yC << endl;
+				plot(xC, yC);
+				++y;
+				x += newM;
+			}
 		}
 		return pointsList;
 	}
@@ -171,10 +238,8 @@ public:
 			error = 2 * dy - dx,
 			x = x1,
 			y = y1;
-		// glVertex2i(x, y);
 		while (x <= x2) {
 			glVertex2i(x, y);
-			// pointsList.push_back(Point(x, y));
 			if (error < 0) {
 				error += 2 * dy;
 			}
@@ -212,7 +277,25 @@ public:
 
 	void draw()
 	{
+		glColor3i(R, G, B);
 		glBegin(GL_POINTS);
+		int startX, startY, endX, endY;
+		if (x1 <= x2) {
+			startX = x1;
+			startY = y1;
+			endX = x2;
+			endY = y2;
+		}
+		else {
+			startX = x2;
+			startY = y2;
+			endX = x1;
+			endY = y1;
+		}
+		x1 = startX;
+		y1 = startY;
+		x2 = endX;
+		y2 = endY;
 		vector<Point> pointsList;
 		if (option == 0) {
 			cout << "DDA algorithm\n";
@@ -233,10 +316,12 @@ public:
 
 class Circle : public Shape {
 private:
+	unsigned char R, G, B;
 	int xt, yt, r;
 
 	void plot(int x, int y)
 	{
+		bitMap[x][y] = RGBColor(R, G, B);
 		glVertex2i(x, y);
 	}
 
@@ -256,6 +341,8 @@ private:
 
 public:
 	Circle(){};
+	Circle(unsigned char R, unsigned char G, unsigned char B)
+		: R(R), G(G), B(B){};
 	~Circle(){};
 
 	void readInput(ifstream &fin)
@@ -324,6 +411,7 @@ public:
 
 class Ellipse : public Shape {
 private:
+	unsigned char R, G, B;
 	int xt, yt, a, b;
 
 public:
@@ -331,18 +419,27 @@ public:
 	Ellipse(int xt, int yt, int a, int b)
 		: xt(xt), yt(yt), a(a), b(b) {}
 
+	Ellipse(unsigned char R, unsigned char G, unsigned char B)
+		: R(R), G(G), B(B){};
+
 	void readInput(ifstream &fin)
 	{
 		fin >> xt >> yt >> a >> b;
 	}
 
+	void plot(int x, int y)
+	{
+		bitMap[x][y] = RGBColor(R, G, B);
+		glVertex2i(x, y);
+	}
+
 	void drawCorrespondingPoints(int x, int y)
 	{
 		glBegin(GL_POINTS);
-		glVertex2i(xt + x, yt + y);
-		glVertex2i(xt + x, yt - y);
-		glVertex2i(xt - x, yt + y);
-		glVertex2i(xt - x, yt - y);
+		plot(xt + x, yt + y);
+		plot(xt + x, yt - y);
+		plot(xt - x, yt + y);
+		plot(xt - x, yt - y);
 		glEnd();
 	}
 
@@ -393,7 +490,7 @@ public:
 			float theta = angle * 3.14159 / 180,
 				  x = a * cosf(theta),
 				  y = b * sinf(theta);
-			glVertex2f(newXt + x, newYt + y);
+			glVertex2i(newXt + x, newYt + y);
 		}
 		glEnd();
 	}
