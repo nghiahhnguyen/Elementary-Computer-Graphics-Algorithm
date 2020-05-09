@@ -3,3 +3,6 @@ OpenGlApp
 ./Source/OpenGlApp
 .vscode
 .vscode/
+*.zip
+./*/*.zip
+1751013_Lab02.zip
