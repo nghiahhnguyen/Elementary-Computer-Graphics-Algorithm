@@ -184,7 +184,6 @@ public:
 			}
 		}
 
-		// printf("%d %d\n", int(pointsList.size()), int(correctPointsList.size()));
 
 		if (int(pointsList.size()) != 0 && int(correctPointsList.size()) != 0) {
 			double loss = calculateDistanceVector(pointsList, correctPointsList);
@@ -229,7 +228,6 @@ public:
 
 	vector<Point> drawLineDDA()
 	{
-		cout << x1 << ' ' << y1 << ' ' << x2 << ' ' << y2 << endl;
 		double dy = y2 - y1,
 			   dx = x2 - x1;
 
@@ -239,7 +237,6 @@ public:
 		if (dy == 0) {
 			while (x <= x2) {
 				plot(x, y);
-				// cout << x << ' ' << y << endl;
 				++x;
 			}
 			return pointsList;
@@ -250,7 +247,6 @@ public:
 			double end = max(y1, y2);
 			while (y <= end) {
 				plot(x, y);
-				// cout << x << ' ' << y << endl;
 				++y;
 			}
 			return pointsList;
@@ -265,7 +261,6 @@ public:
 					xC = x, yC = round(y);
 				else
 					xC = x, yC = 2 * y1 - round(y);
-				// cout << xC << ' ' << yC << endl;
 				plot(xC, yC);
 				++x;
 				y += newM;
@@ -287,7 +282,6 @@ public:
 			while (y <= end) {
 				int xC, yC;
 				xC = round(x), yC = 2 * y1 - y;
-				// cout << xC << ' ' << yC << endl;
 				plot(xC, yC);
 				++y;
 				x += newM;
@@ -372,7 +366,6 @@ public:
 			pointsList = drawLineBresenham();
 		}
 		glEnd();
-		// calculateDistance(pointsList);
 	}
 
 	void updateVertices(vector<Point> &vertices)
@@ -404,8 +397,6 @@ public:
 	{
 		this->color = other;
 	};
-	// Circle(unsigned char R, unsigned char G, unsigned char B)
-	// 	: color(RGBColor(R, G, B)){};
 	~Circle(){};
 
 	void readInput(ifstream &fin)
@@ -415,15 +406,11 @@ public:
 
 	void draw()
 	{
-		// glColor3f(1.0, 0.0, 0.0);
-		// vector<Point> pointsList;
 		int x = 0,
 			y = r,
 			p = 1 - r;
 
-		// plot(x + xt, y + yt);
 		while (x <= y) {
-			// pointsList.push_back(Point(x, y));
 			drawCorrespondingPoints(x, y);
 			++x;
 			if (p < 0) {
@@ -434,8 +421,6 @@ public:
 				p = p + 2 * x - 2 * y + 1;
 			}
 		}
-
-		// calculateDistance(pointsList);
 	}
 
 	// draw the OpenGL implementation
@@ -468,7 +453,6 @@ public:
 		r = sideLength / 2;
 		xt = minX + r;
 		yt = minY + r;
-		// draw();
 	}
 
 	bool inside(int x, int y)
@@ -488,7 +472,6 @@ public:
 			float theta = angle * 3.14159 / 180,
 				  x = r * cosf(theta),
 				  y = r * sinf(theta);
-			// glVertex2f(newXt + x, newYt + y);
 			int xR = xt + x,
 				yR = yt + y,
 				xL = xt - x,
@@ -512,8 +495,6 @@ public:
 	{
 		this->color = other;
 	};
-	// Ellipse(unsigned char R, unsigned char G, unsigned char B)
-	// 	: color(RGBColor(R, G, B)){};
 
 	void readInput(ifstream &fin)
 	{
@@ -584,7 +565,6 @@ public:
 				  x = a * cosf(theta),
 				  y = b * sinf(theta);
 			glVertex2f(newXt + x, newYt + y);
-			// plot(newXt + x, newYt + y);
 		}
 		glEnd();
 	};
@@ -680,14 +660,12 @@ public:
 	}
 
 	void scanLineAlgorithm(RGBColor color) {
-		int height = y2 - y1,
-		width = x2 - x1;
-		int x = x1;
-		while (x < x2) {
-			Line* line = new Line(x, y1, x, y2, color);
+		int y = y1;
+		while (y < y2) {
+			Line* line = new Line(x1, y, x2, y, color);
 			line->draw();
 			delete line;
-			++x;
+			++y;
 		}
 	}
 };
@@ -707,14 +685,12 @@ public:
 	{
 		int n = vertices.size();
 		for (int i = 1; i < n; ++i) {
-			// drawLineGLLine(vertices[i - 1].getX(), vertices[i - 1].getY(), vertices[i].getX(), vertices[i].getY());
 			Line *line = new Line(vertices[i - 1].getX(), vertices[i - 1].getY(), vertices[i].getX(), vertices[i].getY(), color);
 			line->draw();
 			delete line;
 		}
 
 		if (n > 2) {
-			// drawLineGLLine(vertices[n - 1].getX(), vertices[n - 1].getY(), vertices[0].getX(), vertices[0].getY());
 			Line *line = new Line(vertices[n - 1].getX(), vertices[n - 1].getY(), vertices[0].getX(), vertices[0].getY(), color);
 			line->draw();
 			delete line;
