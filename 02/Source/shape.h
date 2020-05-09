@@ -613,6 +613,22 @@ public:
 	{
 		return sqrt(square(x - xt) + square(y - yt));
 	}
+
+	void scanLineColoring(RGBColor fillingColor) {
+		int numSegments = 100;
+		for (int angle = 0; angle < 360; angle += 360 / numSegments) {
+			float theta = angle * 3.14159 / 180,
+				  x = a * cosf(theta),
+				  y = b * sinf(theta);
+			int xR = xt + x,
+				yR = yt + y,
+				xL = xt - x,
+				yL = yt - y;
+			Line *line = new Line(xL, yL, xR, yR);
+			line->draw();
+			delete line;
+		}
+	}
 };
 
 class Rectangle : public Shape {
@@ -629,12 +645,6 @@ public:
 
 	void draw()
 	{
-		// drawLineGLLine(x1, y1, x1, y2);
-		// drawLineGLLine(x1, y1, x2, y1);
-		// drawLineGLLine(x2, y2, x2, y1);
-		// drawLineGLLine(x2, y2, x1, y2);
-		cout << "Rec\n"
-			 << x1 << ' ' << y1 << ' ' << x2 << ' ' << y2 << endl;
 		Line line(x1, y1, x1, y2, color);
 		line.draw();
 		line = Line(x1, y1, x2, y1, color);
@@ -655,7 +665,6 @@ public:
 		y1 = min(startPoint.getY(), endPoint.getY());
 		x2 = max(startPoint.getX(), endPoint.getX());
 		y2 = max(startPoint.getY(), endPoint.getY());
-		// draw();
 	}
 
 	bool inside(int x, int y)
@@ -668,6 +677,18 @@ public:
 		int centerX = (x1 + x2) / 2,
 			centerY = (y1 + y2) / 2;
 		return sqrt(square(centerX - x) + square(centerY - y));
+	}
+
+	void scanLineAlgorithm(RGBColor color) {
+		int height = y2 - y1,
+		width = x2 - x1;
+		int x = x1;
+		while (x < x2) {
+			Line* line = new Line(x, y1, x, y2, color);
+			line->draw();
+			delete line;
+			++x;
+		}
 	}
 };
 
