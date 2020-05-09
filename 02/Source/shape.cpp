@@ -18,7 +18,8 @@ enum COLOR_MENU_OPTION {
 enum PROGRAM_STATE {
 	GLOBAL,	  // Nothing is selected
 	DRAWING,  // In the middle of drawing an image
-	COLORING, // Before coloring
+	FF_COLORING, // During Flood Fill coloring
+	SL_COLORING, // During Scan Line coloring
 };
 
 static vector<Shape *> shapes;
@@ -31,6 +32,14 @@ private:
 	static RGBColor fillingColor;
 	static Shape *shape;
 	static vector<Point> vertices;
+
+	static int distanceToShape(Shape* shape, int x, int y) {
+		if (!shape->inside(x, y)) {
+			return -1;
+		}
+
+		return shape->distanceToCenter(x, y);
+	}
 
 	static void floodFillColoring(int x, int y)
 	{
@@ -60,6 +69,22 @@ private:
 				}
 			}
 		}
+	}
+
+	static void scanLineColoring(int x, int y)
+	{
+		Shape* chosenShape = NULL;
+		double minDist = 1e9, curDist;
+		for (Shape* shape : shapes) {
+			curDist = distanceToShape(shape, x, y);
+			cout << curDist << endl;
+			if (curDist != -1 && curDist < minDist) {
+				minDist = curDist;
+				chosenShape = shape;
+			}
+		}
+
+		shape->scanLineColoring(fillingColor);
 	}
 
 	static void processMenuEvents(int option)
@@ -96,22 +121,47 @@ private:
 		return;
 	}
 
-	static void processColoringMenuEvents(int option)
+	static void floodFillColoringMenuEvents(int option)
 	{
 		switch (option) {
 		case RED:
 			printf("User colors with RED\n");
-			programState = COLORING;
+			programState = FF_COLORING;
 			fillingColor = RGBColor(255, 0, 0);
 			break;
 		case GREEN:
 			printf("User colors with GREEN\n");
-			programState = COLORING;
+			programState = FF_COLORING;
 			fillingColor = RGBColor(0, 255, 0);
 			break;
 		case BLUE:
 			printf("User colors with BLUE\n");
-			programState = COLORING;
+			programState = FF_COLORING;
+			fillingColor = RGBColor(0, 0, 255);
+			break;
+		default:
+			break;
+		}
+		glutPostRedisplay();
+		return;
+	}
+
+	static void scanLineColoringMenuEvents(int option)
+	{
+		switch (option) {
+		case RED:
+			printf("User colors with RED\n");
+			programState = SL_COLORING;
+			fillingColor = RGBColor(255, 0, 0);
+			break;
+		case GREEN:
+			printf("User colors with GREEN\n");
+			programState = SL_COLORING;
+			fillingColor = RGBColor(0, 255, 0);
+			break;
+		case BLUE:
+			printf("User colors with BLUE\n");
+			programState = SL_COLORING;
 			fillingColor = RGBColor(0, 0, 255);
 			break;
 		default:
@@ -131,11 +181,18 @@ public:
 				if (remainingClicks == 0)
 					return;
 
-			if (programState == COLORING && state == GLUT_DOWN) {
+			if (programState == FF_COLORING && state == GLUT_DOWN) {
 				floodFillColoring(x, y);
 				glutPostRedisplay();
 				return;
 			}
+
+			if (programState == SL_COLORING && state == GLUT_DOWN) {
+				floodFillColoring(x, y);
+				glutPostRedisplay();
+				return;
+			}
+
 			if (programState == DRAWING && state == GLUT_DOWN) {
 				vertices.push_back(Point(x, y));
 				--remainingClicks;
@@ -177,7 +234,12 @@ public:
 
 	static void createMenu()
 	{
-		int coloringMenu = glutCreateMenu(processColoringMenuEvents);
+		int floodFillColoringMenu = glutCreateMenu(floodFillColoringMenuEvents);
+		glutAddMenuEntry("Red", RED);
+		glutAddMenuEntry("Green", GREEN);
+		glutAddMenuEntry("Blue", BLUE);
+
+		int scanLineColoringMenu = glutCreateMenu(scanLineColoringMenuEvents);
 		glutAddMenuEntry("Red", RED);
 		glutAddMenuEntry("Green", GREEN);
 		glutAddMenuEntry("Blue", BLUE);
@@ -187,10 +249,10 @@ public:
 		glutAddMenuEntry("Draw an ellipse", DRAW_ELLIPSE);
 		glutAddMenuEntry("Draw a rectangle", DRAW_RECTANGLE);
 		glutAddMenuEntry("Draw a polygon", DRAW_POLYGON);
-		glutAddSubMenu("Coloring", coloringMenu);
+		glutAddSubMenu("FF Coloring", floodFillColoringMenu);
+		glutAddSubMenu("SL Coloring", scanLineColoringMenu);
 
 		glutAttachMenu(GLUT_RIGHT_BUTTON);
-		// glutDetachMenu(GLUT_LEFT_BUTTON);
 	}
 };
 
@@ -213,11 +275,6 @@ void renderScene(void)
 	for (int i = 1; i <= WIDTH; ++i) {
 		for (int j = 1; j <= HEIGHT; ++j) {
 			tempColor = bitMap[i][j];
-			// if (int(tempColor.r) != 255 && int(tempColor.g) != 255 && int(tempColor.b) != 255)
-			// 	cout << tempColor << endl;
-			// if (tempColor.r != 255 && tempColor.g != 255 && tempColor.b != 255) {
-			// 	cout << tempColor.r << ' ' << tempColor.g << ' ' << tempColor.b << endl;
-			// }
 			int R = int(tempColor.r), G = int(tempColor.g), B = int(tempColor.b);
 			glColor3ub(R, G, B);
 			glBegin(GL_POINTS);
@@ -249,11 +306,6 @@ int main(int argc, char **argv)
 	glFlush();
 	glutSwapBuffers();
 
-	// for (int i = 0; i < WIDTH; ++i) {
-	// 	for (int j = 0; j < HEIGHT; ++j) {
-	// 		bitMap[i + 1][j + 1] = RGBColor(255, 255, 255);
-	// 	}
-	// }
 	// register callbacks
 	glutDisplayFunc(renderScene); // create menu
 	MenuHandler *handler = new MenuHandler();

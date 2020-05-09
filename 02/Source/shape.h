@@ -13,6 +13,11 @@ using namespace std;
 
 const int WIDTH = 1200, HEIGHT = 800;
 
+long long square(int x)
+{
+	return 1LL * x * x;
+}
+
 class RGBColor {
 public:
 	unsigned char r, g, b;
@@ -46,11 +51,11 @@ public:
 	}
 };
 
-ostream& operator<<(ostream &os, const RGBColor &color)
-	{
-		os << int(color.r) << '/' << int(color.g) << '/' << int(color.b);
-		return os;
-	}
+ostream &operator<<(ostream &os, const RGBColor &color)
+{
+	os << int(color.r) << '/' << int(color.g) << '/' << int(color.b);
+	return os;
+}
 
 RGBColor bitMap[WIDTH + 1][HEIGHT + 1];
 
@@ -190,6 +195,10 @@ public:
 		if (buffer == NULL)
 			delete[] buffer;
 	}
+
+	virtual bool inside(int x, int y) { return true; };
+	virtual double distanceToCenter(int x, int y) { return 0.0; };
+	virtual void scanLineColoring(RGBColor fillingColor){};
 };
 
 class Line : public Shape {
@@ -461,6 +470,34 @@ public:
 		yt = minY + r;
 		// draw();
 	}
+
+	bool inside(int x, int y)
+	{
+		return (xt - x) * (xt - x) + (yt - y) * (yt - y) <= r * r;
+	}
+
+	double distanceToCenter(int x, int y)
+	{
+		return sqrt((xt - x) * (xt - x) + (yt - y) * (yt - y));
+	}
+
+	void scanLineColoring(RGBColor fillingColor)
+	{
+		int numSegments = 100;
+		for (int angle = 0; angle < 180; angle += 360 / numSegments) {
+			float theta = angle * 3.14159 / 180,
+				  x = r * cosf(theta),
+				  y = r * sinf(theta);
+			// glVertex2f(newXt + x, newYt + y);
+			int xR = xt + x,
+				yR = yt + y,
+				xL = xt - x,
+				yL = yt - y;
+			Line *line = new Line(xL, yL, xR, yR);
+			line->draw();
+			delete line;
+		}
+	}
 };
 
 class Ellipse : public Shape {
@@ -532,19 +569,6 @@ public:
 				p2 += (a * a - dy);
 			}
 		}
-		// int newXt = xt, newYt = yt;
-
-		// glBegin(GL_LINE_LOOP);
-		// int numSegments = 100;
-		// for (int angle = 0; angle < 360; angle += 360 / numSegments) {
-		// 	float theta = angle * 3.14159 / 180,
-		// 		  x = a * cosf(theta),
-		// 		  y = b * sinf(theta);
-		// 	glVertex2i(newXt + x, newYt + y);
-		// 	bitMap[int(newXt + x)][int(newYt + y)] = color;
-		// 	// plot(newXt + x, newYt + y);
-		// }
-		// glEnd();
 	}
 
 	void drawOpenGL(vector<int> &results)
@@ -559,8 +583,8 @@ public:
 			float theta = angle * 3.14159 / 180,
 				  x = a * cosf(theta),
 				  y = b * sinf(theta);
-			// glVertex2f(newXt + x, newYt + y);
-			plot(newXt + x, newYt + y);
+			glVertex2f(newXt + x, newYt + y);
+			// plot(newXt + x, newYt + y);
 		}
 		glEnd();
 	};
@@ -579,8 +603,17 @@ public:
 		yt = minY + b;
 		// draw();
 	}
-};
 
+	bool inside(int x, int y)
+	{
+		return square(b) * square(x - xt) + square(a) * square(y - yt) <= square(a) * square(b);
+	}
+
+	double distance(int x, int y)
+	{
+		return sqrt(square(x - xt) + square(y - yt));
+	}
+};
 
 class Rectangle : public Shape {
 private:
@@ -623,6 +656,18 @@ public:
 		x2 = max(startPoint.getX(), endPoint.getX());
 		y2 = max(startPoint.getY(), endPoint.getY());
 		// draw();
+	}
+
+	bool inside(int x, int y)
+	{
+		return x1 < x && x < x2 && y1 < y && y < y2;
+	}
+
+	double distance(int x, int y)
+	{
+		int centerX = (x1 + x2) / 2,
+			centerY = (y1 + y2) / 2;
+		return sqrt(square(centerX - x) + square(centerY - y));
 	}
 };
 
