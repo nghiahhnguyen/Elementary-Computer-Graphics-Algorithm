@@ -5,6 +5,7 @@
 #include <chrono>
 #include <fstream>
 #include <iostream>
+#include <list>
 #include <math.h>
 #include <sstream>
 #include <vector>
@@ -183,7 +184,6 @@ public:
 				}
 			}
 		}
-
 
 		if (int(pointsList.size()) != 0 && int(correctPointsList.size()) != 0) {
 			double loss = calculateDistanceVector(pointsList, correctPointsList);
@@ -594,7 +594,8 @@ public:
 		return sqrt(square(x - xt) + square(y - yt));
 	}
 
-	void scanLineColoring(RGBColor fillingColor) {
+	void scanLineColoring(RGBColor fillingColor)
+	{
 		int numSegments = 100;
 		for (int angle = 0; angle < 360; angle += 360 / numSegments) {
 			float theta = angle * 3.14159 / 180,
@@ -659,10 +660,11 @@ public:
 		return sqrt(square(centerX - x) + square(centerY - y));
 	}
 
-	void scanLineAlgorithm(RGBColor color) {
+	void scanLineAlgorithm(RGBColor color)
+	{
 		int y = y1;
 		while (y < y2) {
-			Line* line = new Line(x1, y, x2, y, color);
+			Line *line = new Line(x1, y, x2, y, color);
 			line->draw();
 			delete line;
 			++y;
@@ -672,7 +674,33 @@ public:
 
 class Polygon : public Shape {
 private:
-	vector<Point> vertices;
+	int minY = HEIGHT + 5, maxY = -1, // start and end for scan line algorithm
+		edgeCount = 0;				  // number of edges
+	vector<Point> vertices;			  // list of vertices
+	vector<double> slopeInv;		  // list of slope inverse of each edge
+	vector<int> xMin, yMax;			  // list of x-coordinate of point with minimum y-coordinate, y-coordinate of point with maximum y-coordinate for each edge
+	vector<vector<int>> edgeTable;	  // table storing the edges at its starting line entry
+
+	int normalize(int y)
+	{
+		return y - minY;
+	}
+
+	void updateEdge(int x1, int y1, int x2, int y2)
+	{
+		double mInv = 1.0 * (x2 - x1) * (y2 - y1);
+		if (y1 > y2) {
+			int tempX = x2, tempY = y2;
+			x2 = x1;
+			y2 = y1;
+			x1 = tempX;
+			y1 = tempY;
+		}
+		xMin.push_back(x1);
+		yMax.push_back(y2);
+		slopeInv.push_back(mInv);
+		edgeTable[normalize(y1)].push_back(edgeCount++);
+	}
 
 public:
 	Polygon(){};
@@ -683,17 +711,23 @@ public:
 
 	void draw()
 	{
+		edgeTable.assign(maxY - minY, vector<int>());
 		int n = vertices.size();
+
 		for (int i = 1; i < n; ++i) {
-			Line *line = new Line(vertices[i - 1].getX(), vertices[i - 1].getY(), vertices[i].getX(), vertices[i].getY(), color);
+			int x1 = vertices[i - 1].getX(), y1 = vertices[i - 1].getY(), x2 = vertices[i].getX(), y2 = vertices[i].getY();
+			Line *line = new Line(x1, y1, x2, y2, color);
 			line->draw();
 			delete line;
+			updateEdge(x1, y1, x2, y2);
 		}
 
 		if (n > 2) {
-			Line *line = new Line(vertices[n - 1].getX(), vertices[n - 1].getY(), vertices[0].getX(), vertices[0].getY(), color);
+			int x1 = vertices[n - 1].getX(), y1 = vertices[n - 1].getY(), x2 = vertices[0].getX(), y2 = vertices[0].getY();
+			Line *line = new Line(x1, y1, x2, y2, color);
 			line->draw();
 			delete line;
+			updateEdge(x1, y1, x2, y2);
 		}
 	}
 
@@ -705,5 +739,52 @@ public:
 	void updateVertices(vector<Point> &vertices)
 	{
 		this->vertices = vertices;
+		for (Point vertex : vertices) {
+			minY = min(minY, vertex.getY());
+			maxY = max(maxY, vertex.getY());
+		}
+	}
+
+	bool inside(int x, int y)
+	{
+		return true;
+	}
+
+	double distanceToCenter(int x, int y)
+	{
+		double xt, yt;
+		for (Point vertex : vertices) {
+			xt += vertex.getX();
+			yt += vertex.getY();
+		}
+		xt /= double(vertices.size());
+		yt /= double(vertices.size());
+		return sqrt(square(x - xt) + square(y - yt));
+	}
+
+	void insert(vector<double>& xIntercept, list<int>& lst, int n, int value) {
+		list<int>::iterator it = lst.begin();
+		while(xIntercept[*it] < value) {
+			++it;
+		}
+		lst.insert(it, n);
+	}
+
+	void scanLineColoring(RGBColor fillingColor)
+	{
+		int scanY = minY;
+		list<int> activeList;
+		vector<double> xIntercept(edgeCount);
+		for (int i = 0; i < edgeCount; ++i) {
+			xIntercept[i] = double(xMin[i]);
+		}
+		while (scanY < maxY) {
+			for (int edge : edgeTable[normalize(scanY)]) {
+				insert(xIntercept, activeList, edge, xMin[edge]);
+			}
+			for (auto it = activeList.begin(); it != activeList.end(); ++it) {
+				if (it)
+			}
+		}
 	}
 };
