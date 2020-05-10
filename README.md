@@ -1,10 +1,14 @@
-**Remark: This code is written is tested on Ubuntu 19.10 (using KDE as DE), so it is not always portable to other OSs.
+**Remark: This code is written is tested on Ubuntu 19.10 (using KDE as DE), so it is not always portable to other OSs.**
 
 # 1. Shape Drawing Benchmark
 This is a simple shape drawing benchmark in which I test the implementation of the MidPoint algorithms compared to OpenGL implementation
 
+![](https://github.com/huunghia160799/Shape-Drawing-Benchmark/blob/master/1-shape-drawing-benchmark/Documentation/DemoPicture.png)
+
 # 2. Shape Coloring
-This is an application that allows you to draw shapes and color them using either Flood Filling algorithm or Scan Line algorithm
+This is an application that allows you to draw shapes and color them using either Flood Filling algorithm or Scan Line algorithm.
+![](https://github.com/huunghia160799/Shape-Drawing-Benchmark/blob/master/2-shape-coloring/Document/Demo.png)
+
 ## Rendering
 - In order to keep a faster and easier interface for drawing pixels, I used a bitmap, represented by a matrix of unsigned char for keeping track the colors of the pixels on the screen. At every display rendering callback, I only render the buffer, instead of each shape.
 - In order to draw a pixel, you can set the color of the corresponding element in the bitmap.
