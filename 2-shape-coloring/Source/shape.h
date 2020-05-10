@@ -786,27 +786,37 @@ public:
 		for (int scanY = minY; scanY < maxY; ++scanY) {
 			// add new edge to active edges list
 			for (int edge : edgeTable[normalize(scanY)]) {
+				/* insert the new edge in a way that keeps the active list sorted 
+				in an ascending order of the xIntercept value*/
 				insert(xIntercept, activeList, edge, xMin[edge]);
 			}
 
-			// 
+
 			auto cur = activeList.begin(), prev = activeList.begin();
 			++cur;
+			// parity bit
 			int parity = 0;
+			// iterate through each pair of adjacent points
 			for (; cur != activeList.end(); ++cur, ++prev) {
 				if (xIntercept[*cur] == xIntercept[*prev]) {
 					if (slopeInv[*cur] * slopeInv[*prev] < 0) {
+						/* if the two edges have the same intercept (this is their intersection) 
+						and their slope have different signs */
 						continue;
 					}
 				}
+				// update the parity bit
 				parity = (parity + 1) % 2;
+				// if the parity bit is even
 				if (parity == 0) {
+					// draw
 					for (int x = xIntercept[*prev]; x != xIntercept[*cur]; ++x) {
 						plot(x, scanY, fillingColor);
 					}
 				}
 			}
 
+			// cerase edges which is finished with its drawing
 			cur = activeList.begin();
 			while (cur != activeList.end()) {
 				if (yMax[*cur] == scanY) {
@@ -817,6 +827,7 @@ public:
 				}
 			}
 
+			// update the x-intercepts of the points
 			for (cur = activeList.begin(); cur != activeList.end(); ++cur) {
 				xIntercept[*cur] += slopeInv[*cur];
 			}
