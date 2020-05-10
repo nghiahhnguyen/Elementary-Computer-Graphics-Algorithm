@@ -105,6 +105,11 @@ protected:
 		// cout << bitMap[x][y] << "\n\n";
 	}
 
+	void plot(int x, int y, RGBColor drawColor)
+	{
+		bitMap[x][y] = drawColor;
+	}
+
 public:
 	Shape(){};
 	~Shape(){};
@@ -762,9 +767,10 @@ public:
 		return sqrt(square(x - xt) + square(y - yt));
 	}
 
-	void insert(vector<double>& xIntercept, list<int>& lst, int n, int value) {
+	void insert(vector<double> &xIntercept, list<int> &lst, int n, int value)
+	{
 		list<int>::iterator it = lst.begin();
-		while(xIntercept[*it] < value) {
+		while (xIntercept[*it] < value) {
 			++it;
 		}
 		lst.insert(it, n);
@@ -772,18 +778,47 @@ public:
 
 	void scanLineColoring(RGBColor fillingColor)
 	{
-		int scanY = minY;
 		list<int> activeList;
 		vector<double> xIntercept(edgeCount);
 		for (int i = 0; i < edgeCount; ++i) {
 			xIntercept[i] = double(xMin[i]);
 		}
-		while (scanY < maxY) {
+		for (int scanY = minY; scanY < maxY; ++scanY) {
+			// add new edge to active edges list
 			for (int edge : edgeTable[normalize(scanY)]) {
 				insert(xIntercept, activeList, edge, xMin[edge]);
 			}
-			for (auto it = activeList.begin(); it != activeList.end(); ++it) {
-				if (it)
+
+			// 
+			auto cur = activeList.begin(), prev = activeList.begin();
+			++cur;
+			int parity = 0;
+			for (; cur != activeList.end(); ++cur, ++prev) {
+				if (xIntercept[*cur] == xIntercept[*prev]) {
+					if (slopeInv[*cur] * slopeInv[*prev] < 0) {
+						continue;
+					}
+				}
+				parity = (parity + 1) % 2;
+				if (parity == 0) {
+					for (int x = xIntercept[*prev]; x != xIntercept[*cur]; ++x) {
+						plot(x, scanY, fillingColor);
+					}
+				}
+			}
+
+			cur = activeList.begin();
+			while (cur != activeList.end()) {
+				if (yMax[*cur] == scanY) {
+					cur = activeList.erase(cur);
+				}
+				else {
+					++cur;
+				}
+			}
+
+			for (cur = activeList.begin(); cur != activeList.end(); ++cur) {
+				xIntercept[*cur] += slopeInv[*cur];
 			}
 		}
 	}
