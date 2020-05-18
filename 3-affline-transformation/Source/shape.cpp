@@ -143,7 +143,6 @@ public:
 	static void processNormalKeys(unsigned char key, int x, int y)
 	{
 		if (programState == SELECTED) {
-			cout << "Length of list of shapes: " << shapes.size() << endl;
 			switch (key) {
 			case 43:
 				printf("+ was pressed\n");
@@ -213,7 +212,10 @@ void renderScene(void)
 			bitMap[i][j] = RGBColor(255, 255, 255);
 		}
 	}
+
+	int shapeCount = 1;
 	for (Shape *shape : shapes) {
+		printf("Drawing shape %d\n", shapeCount++);
 		shape->draw();
 	}
 

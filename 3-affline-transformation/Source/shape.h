@@ -287,7 +287,7 @@ public:
 				y += newM;
 			}
 		}
-		else if (m > 1) {
+		else if (m >= 1) {
 			double newM = abs(1.0 * dx / dy);
 			while (y <= y2) {
 				int xC, yC;
@@ -297,7 +297,7 @@ public:
 				x += newM;
 			}
 		}
-		else if (m < -1) {
+		else if (m <= -1) {
 			double newM = abs(1.0 * dx / dy);
 			double end = 2 * y1 - y2;
 			while (y <= end) {
@@ -307,6 +307,8 @@ public:
 				++y;
 				x += newM;
 			}
+		} else {
+			printf("you dumbass missed a case\n");
 		}
 		return pointsList;
 	}
@@ -870,34 +872,77 @@ public:
 			rotate(ROTATE_RIGHT);
 			break;
 		case ENLARGE:
+			scale(ENLARGE);
 			break;
 		case SHRINK:
+			scale(SHRINK);
 			break;
 		case MOVE_LEFT:
+			translate(MOVE_LEFT);
 			break;
 		case MOVE_RIGHT:
+			translate(MOVE_RIGHT);
 			break;
 		case MOVE_UP:
+			translate(MOVE_UP);
 			break;
 		case MOVE_DOWN:
+			translate(MOVE_DOWN);
 			break;
 		}
 	}
 
 	void rotate(int option)
 	{
-		printf("Rotate counterclockwise\n");
 		int n = vertices.size();
 		double degree;
 		if (option == ROTATE_LEFT)
 			degree = -rotateDegree;
-		else
+		else if (option == ROTATE_RIGHT)
 			degree = rotateDegree;
 		for (int i = 0; i < n; ++i) {
 			double radian = degree * PI / 180.0;
 			Point vertex = vertices[i];
 			int newX = xt + (vertex.getX() - xt) * cos(radian) - (vertex.getY() - yt) * sin(radian),
 				newY = yt + (vertex.getX() - xt) * sin(radian) + (vertex.getY() - yt) * cos(radian);
+			vertices[i].setX(newX);
+			vertices[i].setY(newY);
+		}
+	}
+
+	void scale(int option)
+	{
+		int n = vertices.size();
+		double ratio;
+		if (option == ENLARGE)
+			ratio = 1.1;
+		else if (option == SHRINK)
+			ratio = 0.9;
+		for (int i = 0; i < n; ++i) {
+			Point vertex = vertices[i];
+			int newX = xt + (vertex.getX() - xt) * ratio,
+				newY = yt + (vertex.getY() - yt) * ratio;
+			vertices[i].setX(newX);
+			vertices[i].setY(newY);
+		}
+	}
+
+	void translate(int option)
+	{
+		int n = vertices.size();
+		int dx, dy;
+		if (option == MOVE_LEFT)
+			dx = -1, dy = 0;
+		else if (option == MOVE_RIGHT)
+			dx = 1, dy = 0;
+		else if (option == MOVE_UP)
+			dx = 0, dy = -1;
+		else if (option == MOVE_DOWN)
+			dx = 0, dy = 1;
+		for (int i = 0; i < n; ++i) {
+			Point vertex = vertices[i];
+			int newX = vertex.getX() + dx,
+				newY = vertex.getY() + dy;
 			vertices[i].setX(newX);
 			vertices[i].setY(newY);
 		}
