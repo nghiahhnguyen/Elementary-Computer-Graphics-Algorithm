@@ -291,7 +291,6 @@ int main(int argc, char **argv)
 {
 	int width = WIDTH,
 		height = HEIGHT;
-	// TODO: make this singleton
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_SINGLE | GLUT_RGB);
 	glutInitWindowSize(width, height); // set the size of the window
