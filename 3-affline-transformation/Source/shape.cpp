@@ -139,6 +139,61 @@ public:
 		glutAddMenuEntry("SELECT", SELECT);
 		glutAttachMenu(GLUT_RIGHT_BUTTON);
 	}
+
+	static void processNormalKeys(unsigned char key, int x, int y)
+	{
+		if (programState == SELECTED) {
+			cout << "Length of list of shapes: " << shapes.size() << endl;
+			switch (key) {
+			case 43:
+				printf("+ was pressed\n");
+				selectedShape->transform(ENLARGE);
+				break;
+			case 45:
+				printf("- was pressed\n");
+				selectedShape->transform(SHRINK);
+				break;
+			case 108:
+				printf("\'l\' was pressed\n");
+				selectedShape->transform(ROTATE_LEFT);
+				break;
+			case 114:
+				printf("\'r\' was pressed\n");
+				selectedShape->transform(ROTATE_RIGHT);
+				break;
+			default:
+				break;
+			}
+			glutPostRedisplay();
+		}
+	}
+
+	static void processSpecialKeys(int key, int x, int y)
+	{
+		if (programState == SELECTED) {
+			switch (key) {
+			case GLUT_KEY_LEFT:
+				printf("LEFT was pressed\n");
+				selectedShape->transform(MOVE_LEFT);
+				break;
+			case GLUT_KEY_RIGHT:
+				printf("RIGHT was pressed\n");
+				selectedShape->transform(MOVE_RIGHT);
+				break;
+			case GLUT_KEY_UP:
+				printf("UP was pressed\n");
+				selectedShape->transform(MOVE_UP);
+				break;
+			case GLUT_KEY_DOWN:
+				printf("DOWN was pressed\n");
+				selectedShape->transform(MOVE_DOWN);
+				break;
+			default:
+				break;
+			}
+			glutPostRedisplay();
+		}
+	}
 };
 
 int MenuHandler::remainingClicks = -1,
@@ -152,6 +207,12 @@ void renderScene(void)
 {
 	glClear(GL_COLOR_BUFFER_BIT);
 	glPointSize(1.0);
+	// clear the bitmap to erase old drawings
+	for (int i = 1; i <= WIDTH; ++i) {
+		for (int j = 1; j <= HEIGHT; ++j) {
+			bitMap[i][j] = RGBColor(255, 255, 255);
+		}
+	}
 	for (Shape *shape : shapes) {
 		shape->draw();
 	}
@@ -194,7 +255,10 @@ int main(int argc, char **argv)
 	glutDisplayFunc(renderScene); // create menu
 	MenuHandler *handler = new MenuHandler();
 	glutMouseFunc(handler->mouseActionHandler);
+	glutKeyboardFunc(handler->processNormalKeys);
+	glutSpecialFunc(handler->processSpecialKeys);
 	handler->createMenu();
+
 	glutMainLoop();
 
 	// free the dynamic memory

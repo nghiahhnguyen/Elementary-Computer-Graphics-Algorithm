@@ -12,7 +12,18 @@
 
 using namespace std;
 
-const int WIDTH = 1200, HEIGHT = 800;
+const int WIDTH = 1200, HEIGHT = 800, PI = 3.14159265;
+
+enum TRANSFORMATION {
+	ROTATE_LEFT,
+	ROTATE_RIGHT,
+	MOVE_LEFT,
+	MOVE_RIGHT,
+	MOVE_UP,
+	MOVE_DOWN,
+	ENLARGE,
+	SHRINK
+};
 
 long long square(int x)
 {
@@ -207,6 +218,7 @@ public:
 	virtual void scanLineColoring(RGBColor fillingColor){};
 	virtual void unSelect(){};
 	virtual void switchToSelected(RGBColor focusColor){};
+	virtual void transform(int option){};
 };
 
 class Line : public Shape {
@@ -683,6 +695,8 @@ public:
 
 class Polygon : public Shape {
 private:
+	double xt, yt; // mean of the points of the polygon
+	int rotateDegree = 10;
 	int minY = HEIGHT + 5, maxY = -1, // start and end for scan line algorithm
 		edgeCount = 0;				  // number of edges
 	vector<Point> vertices;			  // list of vertices
@@ -752,6 +766,12 @@ public:
 			minY = min(minY, vertex.getY());
 			maxY = max(maxY, vertex.getY());
 		}
+		for (Point vertex : vertices) {
+			xt += vertex.getX();
+			yt += vertex.getY();
+		}
+		xt /= double(vertices.size());
+		yt /= double(vertices.size());
 	}
 
 	bool inside(int x, int y)
@@ -761,13 +781,6 @@ public:
 
 	double distanceToCenter(int x, int y)
 	{
-		double xt, yt;
-		for (Point vertex : vertices) {
-			xt += vertex.getX();
-			yt += vertex.getY();
-		}
-		xt /= double(vertices.size());
-		yt /= double(vertices.size());
 		return sqrt(square(x - xt) + square(y - yt));
 	}
 
@@ -819,7 +832,7 @@ public:
 				}
 			}
 
-			// cerase edges which is finished with its drawing
+			// erase edges which is finished with its drawing
 			cur = activeList.begin();
 			while (cur != activeList.end()) {
 				if (yMax[*cur] == scanY) {
@@ -837,11 +850,56 @@ public:
 		}
 	}
 
-	virtual void unSelect(){
+	void unSelect()
+	{
 		color = black;
 	};
 
-	virtual void switchToSelected(RGBColor focusColor){
+	void switchToSelected(RGBColor focusColor)
+	{
 		color = focusColor;
 	};
+
+	void transform(int option)
+	{
+		switch (option) {
+		case ROTATE_LEFT:
+			rotate(ROTATE_LEFT);
+			break;
+		case ROTATE_RIGHT:
+			rotate(ROTATE_RIGHT);
+			break;
+		case ENLARGE:
+			break;
+		case SHRINK:
+			break;
+		case MOVE_LEFT:
+			break;
+		case MOVE_RIGHT:
+			break;
+		case MOVE_UP:
+			break;
+		case MOVE_DOWN:
+			break;
+		}
+	}
+
+	void rotate(int option)
+	{
+		printf("Rotate counterclockwise\n");
+		int n = vertices.size();
+		double degree;
+		if (option == ROTATE_LEFT)
+			degree = -rotateDegree;
+		else
+			degree = rotateDegree;
+		for (int i = 0; i < n; ++i) {
+			double radian = degree * PI / 180.0;
+			Point vertex = vertices[i];
+			int newX = xt + (vertex.getX() - xt) * cos(radian) - (vertex.getY() - yt) * sin(radian),
+				newY = yt + (vertex.getX() - xt) * sin(radian) + (vertex.getY() - yt) * cos(radian);
+			vertices[i].setX(newX);
+			vertices[i].setY(newY);
+		}
+	}
 };
