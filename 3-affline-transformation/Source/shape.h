@@ -307,7 +307,8 @@ public:
 				++y;
 				x += newM;
 			}
-		} else {
+		}
+		else {
 			printf("you dumbass missed a case\n");
 		}
 		return pointsList;
@@ -892,7 +893,31 @@ public:
 		}
 	}
 
-	void rotate(int option)
+	vector<Point> matMul(vector<Point> mat, vector<vector<double>> transMat)
+	{
+		int n = mat.size(),
+			m = transMat.size();
+		vector<Point> result(n, Point(0, 0));
+		for (int i = 0; i < n; ++i) {
+			result[i].setX(mat[i].getX() * transMat[0][0] + mat[i].getY() * transMat[1][0]);
+			result[i].setY(mat[i].getX() * transMat[0][1] + mat[i].getY() * transMat[1][1]);
+		}
+		return result;
+	}
+
+	vector<Point> rotateToOrigin(vector<Point> &mat)
+	{
+		vector<vector<double>> transMat = {{-xt, 0}, {0, -yt}};
+		return matMul(mat, transMat);
+	}
+
+	vector<Point> rotateToShapeCenter(vector<Point> &mat)
+	{
+		vector<vector<double>> transMat = {{xt, 0}, {0, yt}};
+		return matMul(mat, transMat);
+	}
+
+	void rotate(int option, bool useMatMul = true)
 	{
 		int n = vertices.size();
 		double degree;
@@ -900,13 +925,24 @@ public:
 			degree = -rotateDegree;
 		else if (option == ROTATE_RIGHT)
 			degree = rotateDegree;
-		for (int i = 0; i < n; ++i) {
-			double radian = degree * PI / 180.0;
-			Point vertex = vertices[i];
-			int newX = xt + (vertex.getX() - xt) * cos(radian) - (vertex.getY() - yt) * sin(radian),
-				newY = yt + (vertex.getX() - xt) * sin(radian) + (vertex.getY() - yt) * cos(radian);
-			vertices[i].setX(newX);
-			vertices[i].setY(newY);
+		double radian = degree * PI / 180.0;
+		if (!useMatMul) {
+			for (int i = 0; i < n; ++i) {
+				Point vertex = vertices[i];
+				int newX = xt + (vertex.getX() - xt) * cos(radian) - (vertex.getY() - yt) * sin(radian),
+				    newY = yt + (vertex.getX() - xt) * sin(radian) + (vertex.getY() - yt) * cos(radian);
+				vertices[i].setX(newX);
+				vertices[i].setY(newY);
+			}
+		}
+		else {
+			vector<Point> newVertices = rotateToOrigin(vertices);
+			printf("To origin\n");
+			vector<vector<double>> transMat = {{cos(radian), sin(radian)}, {-sin(radian), cos(radian)}};
+			newVertices = matMul(newVertices, transMat);
+			printf("Rotated\n");
+			vertices = rotateToShapeCenter(newVertices);
+			printf("To original\n");
 		}
 	}
 
