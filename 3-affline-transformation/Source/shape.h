@@ -71,7 +71,7 @@ ostream &operator<<(ostream &os, const RGBColor &color)
 	return os;
 }
 
-RGBColor bitMap[WIDTH + 1][HEIGHT + 1];
+RGBColor bitMap[WIDTH + 5][HEIGHT + 5];
 
 class Point {
 private:
@@ -114,13 +114,19 @@ protected:
 		// cout << "==\n"
 		// << bitMap[x][y] << endl;
 		// cout << color << endl;
-		bitMap[x][y] = color;
+		if (x > 0 && x <= WIDTH && y > 0 && y <= HEIGHT)
+			bitMap[x][y] = color;
+		else
+			printf("Point out of bound.\t Not drawing\n");
 		// cout << bitMap[x][y] << "\n\n";
 	}
 
 	void plot(int x, int y, RGBColor drawColor)
 	{
-		bitMap[x][y] = drawColor;
+		if (x > 0 && x <= WIDTH && y > 0 && y <= HEIGHT)
+			bitMap[x][y] = drawColor;
+		else
+			printf("Point out of bound.\t Not drawing\n");
 	}
 
 public:
@@ -745,7 +751,6 @@ public:
 			Line *line = new Line(x1, y1, x2, y2, color);
 			line->draw();
 			delete line;
-			updateEdge(x1, y1, x2, y2);
 		}
 
 		if (n > 2) {
@@ -753,7 +758,6 @@ public:
 			Line *line = new Line(x1, y1, x2, y2, color);
 			line->draw();
 			delete line;
-			updateEdge(x1, y1, x2, y2);
 		}
 	}
 
@@ -899,21 +903,24 @@ public:
 			m = transMat.size();
 		vector<Point> result(n, Point(0, 0));
 		for (int i = 0; i < n; ++i) {
-			result[i].setX(mat[i].getX() * transMat[0][0] + mat[i].getY() * transMat[1][0]);
-			result[i].setY(mat[i].getX() * transMat[0][1] + mat[i].getY() * transMat[1][1]);
+			int sumX = 0, sumY = 0;
+			sumX = mat[i].getX() * transMat[0][0] + mat[i].getY() * transMat[1][0] + transMat[2][0];
+			sumY = mat[i].getX() * transMat[0][1] + mat[i].getY() * transMat[1][1] + transMat[2][1];
+			result[i].setX(sumX);
+			result[i].setY(sumY);
 		}
 		return result;
 	}
 
 	vector<Point> rotateToOrigin(vector<Point> &mat)
 	{
-		vector<vector<double>> transMat = {{-xt, 0}, {0, -yt}};
+		vector<vector<double>> transMat = {{1, 0}, {0, 1}, {-xt, -yt}};
 		return matMul(mat, transMat);
 	}
 
 	vector<Point> rotateToShapeCenter(vector<Point> &mat)
 	{
-		vector<vector<double>> transMat = {{xt, 0}, {0, yt}};
+		vector<vector<double>> transMat = {{1, 0}, {0, 1}, {xt, yt}};
 		return matMul(mat, transMat);
 	}
 
@@ -938,15 +945,19 @@ public:
 		else {
 			vector<Point> newVertices = rotateToOrigin(vertices);
 			printf("To origin\n");
-			vector<vector<double>> transMat = {{cos(radian), sin(radian)}, {-sin(radian), cos(radian)}};
+			vector<vector<double>> transMat = {{cos(radian), sin(radian)}, {-sin(radian), cos(radian)}, {1, 1}};
 			newVertices = matMul(newVertices, transMat);
 			printf("Rotated\n");
-			vertices = rotateToShapeCenter(newVertices);
+			newVertices = rotateToShapeCenter(newVertices);
 			printf("To original\n");
+			for (int i = 0; i < n; ++i) {
+				printf("%d %d  %d %d\n", vertices[i].getX(), vertices[i].getY(), newVertices[i].getX(), newVertices[i].getY());
+			}
+			vertices = newVertices;	
 		}
 	}
 
-	void scale(int option)
+	void scale(int option, bool useMatmul = true)
 	{
 		int n = vertices.size();
 		double ratio;
@@ -954,12 +965,20 @@ public:
 			ratio = 1.1;
 		else if (option == SHRINK)
 			ratio = 0.9;
-		for (int i = 0; i < n; ++i) {
-			Point vertex = vertices[i];
-			int newX = xt + (vertex.getX() - xt) * ratio,
-				newY = yt + (vertex.getY() - yt) * ratio;
-			vertices[i].setX(newX);
-			vertices[i].setY(newY);
+		if (!useMatmul) {
+			for (int i = 0; i < n; ++i) {
+				Point vertex = vertices[i];
+				int newX = xt + (vertex.getX() - xt) * ratio,
+					newY = yt + (vertex.getY() - yt) * ratio;
+				vertices[i].setX(newX);
+				vertices[i].setY(newY);
+			}
+		}
+		else {
+			vector<Point> newVertices = rotateToOrigin(vertices);
+			vector<vector<double>> transMat = {{ratio, 0}, {0, ratio}, {0, 0}};
+			newVertices = matMul(newVertices, transMat);
+			vertices = rotateToShapeCenter(newVertices);
 		}
 	}
 

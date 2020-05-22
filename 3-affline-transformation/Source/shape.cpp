@@ -41,6 +41,8 @@ private:
 
 	static void selectShape(int x, int y)
 	{
+		if (shapes.size() == 0)
+			return;
 		selectedShape = NULL;
 		double minDist = 1e9, curDist;
 		for (Shape *shape : shapes) {
@@ -230,6 +232,17 @@ void renderScene(void)
 			glEnd();
 		}
 	}
+	
+	glBegin(GL_POINTS);
+	for (int i = 1; i <= WIDTH; ++i) {
+		glVertex2i(i, HEIGHT);
+		glVertex2i(i, 1);
+	}
+	for (int i = 1; i <= HEIGHT; ++i) {
+		glVertex2i(1, i);
+		glVertex2i(WIDTH, i);
+	}
+	glEnd();
 
 	glFlush();
 	glutSwapBuffers();
