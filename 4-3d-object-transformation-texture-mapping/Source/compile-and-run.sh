@@ -1,1 +1,1 @@
-g++ shape.h shape3d.cpp -o OpenGlApp -lglfw -lGLEW -lglut -lGLU -lGL && ./OpenGlApp
+g++ shape.h $1 -o OpenGlApp -lglfw -lGLEW -lglut -lGLU -lGL && ./OpenGlApp
