@@ -1,6 +1,6 @@
 #include "SOIL.h"
-#include <stdio.h>
 #include <GL/glut.h>
+#include <stdio.h>
 
 GLuint texture[1];
 
@@ -12,8 +12,10 @@ int loadGLTextures() // Load Bitmaps And Convert To Textures
 		SOIL_LOAD_RGB,
 		SOIL_CREATE_NEW_ID,
 		SOIL_FLAG_INVERT_Y);
-	if (texture[0] == 0)
+	if (texture[0] == 0) {
+		printf("Failed to load image\n");
 		return false;
+	}
 	// Typical Texture Generation Using Data From The Bitmap
 	glBindTexture(GL_TEXTURE_2D, texture[0]);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);

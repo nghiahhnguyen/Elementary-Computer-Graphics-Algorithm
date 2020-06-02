@@ -95,7 +95,7 @@ int drawGLScene(GLvoid) // Here's Where We Do All The Drawing
 
 	glEnd();
 
-	// glDisable(GL_TEXTURE_2D);
+	glDisable(GL_TEXTURE_2D);
 
 	xrot += 0.3f;
 	yrot += 0.80f;
@@ -107,92 +107,130 @@ int drawGLScene(GLvoid) // Here's Where We Do All The Drawing
  whenever the window needs to be re-painted. */
 void display()
 {
+	loadGLTextures();
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear color and depth buffers
 	glMatrixMode(GL_MODELVIEW);							// To operate on model-view matrix
 	// Render a color-cube consisting of 6 quads with different colors
 	glLoadIdentity();						// Reset the model-view matrix
 	glTranslatef(1.5f, 0.0f, -7.0f);		// Move right and into the screen
-	glRotatef(angleCube, 1.0f, 1.0f, 1.0f); // Rotate about (1,1,1)-axis [NEW]
-	glBegin(GL_QUADS);						// Begin drawing the color cube with 6 quads
+	glRotatef(angleCube, 1.0f, 1.0f, 1.0f); // Rotate about (1,1,1)-axis [NEW]			
+	
 	// Top face (y = 1.0f)
 	// Define vertices in counter-clockwise (CCW) order with normal pointing out
-	glColor3f(0.0f, 1.0f, 0.0f); // Green
+	glColor3f(1.0f, 1.0f, 1.0f);
+	glEnable(GL_TEXTURE_2D);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	glBindTexture(GL_TEXTURE_2D, texture[0]);
+	glBegin(GL_QUADS);
+	glTexCoord2f(0, 1);
 	glVertex3f(1.0f, 1.0f, -1.0f);
+	glTexCoord2f(1, 1);
 	glVertex3f(-1.0f, 1.0f, -1.0f);
+	glTexCoord2f(1, 0);
 	glVertex3f(-1.0f, 1.0f, 1.0f);
+	glTexCoord2f(0, 0);
 	glVertex3f(1.0f, 1.0f, 1.0f);
+	glEnd();
+	glDisable(GL_TEXTURE_2D);
+
 	// Bottom face (y = -1.0f)
-	glColor3f(1.0f, 0.5f, 0.0f); // Orange
+	glEnable(GL_TEXTURE_2D);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	glBindTexture(GL_TEXTURE_2D, texture[0]);
+	glBegin(GL_QUADS);	
+	glTexCoord2f(0, 1);
 	glVertex3f(1.0f, -1.0f, 1.0f);
+	glTexCoord2f(1, 1);
 	glVertex3f(-1.0f, -1.0f, 1.0f);
+	glTexCoord2f(1, 0);
 	glVertex3f(-1.0f, -1.0f, -1.0f);
+	glTexCoord2f(0, 0);
 	glVertex3f(1.0f, -1.0f, -1.0f);
+	glEnd();
+	glDisable(GL_TEXTURE_2D);
+
 	// Front face (z = 1.0f)
-	glColor3f(1.0f, 0.0f, 0.0f); // Red
+	glEnable(GL_TEXTURE_2D);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	glBindTexture(GL_TEXTURE_2D, texture[0]);
+	glBegin(GL_QUADS);	
+	glTexCoord2f(0, 1);
 	glVertex3f(1.0f, 1.0f, 1.0f);
+	glTexCoord2f(1, 1);
 	glVertex3f(-1.0f, 1.0f, 1.0f);
+	glTexCoord2f(1, 0);
 	glVertex3f(-1.0f, -1.0f, 1.0f);
+	glTexCoord2f(0, 0);
 	glVertex3f(1.0f, -1.0f, 1.0f);
+	glEnd();
+	glDisable(GL_TEXTURE_2D);
+
 	// Back face (z = -1.0f)
-	glColor3f(1.0f, 1.0f, 0.0f); // Yellow
+	glBegin(GL_QUADS);	
 	glVertex3f(1.0f, -1.0f, -1.0f);
 	glVertex3f(-1.0f, -1.0f, -1.0f);
 	glVertex3f(-1.0f, 1.0f, -1.0f);
 	glVertex3f(1.0f, 1.0f, -1.0f);
+	glEnd();
+
 	// Left face (x = -1.0f)
-	glColor3f(0.0f, 0.0f, 1.0f); // Blue
+	glBegin(GL_QUADS);	
 	glVertex3f(-1.0f, 1.0f, 1.0f);
 	glVertex3f(-1.0f, 1.0f, -1.0f);
 	glVertex3f(-1.0f, -1.0f, -1.0f);
 	glVertex3f(-1.0f, -1.0f, 1.0f);
+	glEnd();
+
 	// Right face (x = 1.0f)
-	glColor3f(1.0f, 0.0f, 1.0f); // Magenta
+	glBegin(GL_QUADS);	
 	glVertex3f(1.0f, 1.0f, -1.0f);
 	glVertex3f(1.0f, 1.0f, 1.0f);
 	glVertex3f(1.0f, -1.0f, 1.0f);
 	glVertex3f(1.0f, -1.0f, -1.0f);
 	glEnd(); // End of drawing color-cube
-	// Render a pyramid consists of 4 triangles
-	glLoadIdentity();						   // Reset the model-view matrix
-	glTranslatef(-1.5f, 0.0f, -6.0f);		   // Move left and into the screen
-	glRotatef(anglePyramid, 1.0f, 1.0f, 0.0f); // Rotate about the (1,1,0)-axis [NEW]
-	glBegin(GL_TRIANGLES);					   // Begin drawing the pyramid with 4 triangles
-	// Front
-	glColor3f(1.0f, 0.0f, 0.0f); // Red
-	glVertex3f(0.0f, 1.0f, 0.0f);
-	glColor3f(0.0f, 1.0f, 0.0f); // Green
-	glVertex3f(-1.0f, -1.0f, 1.0f);
-	glColor3f(0.0f, 0.0f, 1.0f); // Blue
-	glVertex3f(1.0f, -1.0f, 1.0f);
-	// Right
-	glColor3f(1.0f, 0.0f, 0.0f); // Red
-	glVertex3f(0.0f, 1.0f, 0.0f);
-	glColor3f(0.0f, 0.0f, 1.0f); // Blue
-	glVertex3f(1.0f, -1.0f, 1.0f);
-	glColor3f(0.0f, 1.0f, 0.0f); // Green
-	glVertex3f(1.0f, -1.0f, -1.0f);
-	// Back
-	glColor3f(1.0f, 0.0f, 0.0f); // Red
-	glVertex3f(0.0f, 1.0f, 0.0f);
-	glColor3f(0.0f, 1.0f, 0.0f); // Green
-	glVertex3f(1.0f, -1.0f, -1.0f);
-	glColor3f(0.0f, 0.0f, 1.0f); // Blue
-	glVertex3f(-1.0f, -1.0f, -1.0f);
-	// Left
-	glColor3f(1.0f, 0.0f, 0.0f); // Red
-	glVertex3f(0.0f, 1.0f, 0.0f);
-	glColor3f(0.0f, 0.0f, 1.0f); // Blue
-	glVertex3f(-1.0f, -1.0f, -1.0f);
-	glColor3f(0.0f, 1.0f, 0.0f); // Green
-	glVertex3f(-1.0f, -1.0f, 1.0f);
-	glEnd();		   // Done drawing the pyramid
+	
+	// // Render a pyramid consists of 4 triangles
+	// glLoadIdentity();						   // Reset the model-view matrix
+	// glTranslatef(-1.5f, 0.0f, -6.0f);		   // Move left and into the screen
+	// glRotatef(anglePyramid, 1.0f, 1.0f, 0.0f); // Rotate about the (1,1,0)-axis [NEW]
+	// glBegin(GL_TRIANGLES);					   // Begin drawing the pyramid with 4 triangles
+	// // Front
+	// glColor3f(1.0f, 0.0f, 0.0f); // Red
+	// glVertex3f(0.0f, 1.0f, 0.0f);
+	// glColor3f(0.0f, 1.0f, 0.0f); // Green
+	// glVertex3f(-1.0f, -1.0f, 1.0f);
+	// glColor3f(0.0f, 0.0f, 1.0f); // Blue
+	// glVertex3f(1.0f, -1.0f, 1.0f);
+	// // Right
+	// glColor3f(1.0f, 0.0f, 0.0f); // Red
+	// glVertex3f(0.0f, 1.0f, 0.0f);
+	// glColor3f(0.0f, 0.0f, 1.0f); // Blue
+	// glVertex3f(1.0f, -1.0f, 1.0f);
+	// glColor3f(0.0f, 1.0f, 0.0f); // Green
+	// glVertex3f(1.0f, -1.0f, -1.0f);
+	// // Back
+	// glColor3f(1.0f, 0.0f, 0.0f); // Red
+	// glVertex3f(0.0f, 1.0f, 0.0f);
+	// glColor3f(0.0f, 1.0f, 0.0f); // Green
+	// glVertex3f(1.0f, -1.0f, -1.0f);
+	// glColor3f(0.0f, 0.0f, 1.0f); // Blue
+	// glVertex3f(-1.0f, -1.0f, -1.0f);
+	// // Left
+	// glColor3f(1.0f, 0.0f, 0.0f); // Red
+	// glVertex3f(0.0f, 1.0f, 0.0f);
+	// glColor3f(0.0f, 0.0f, 1.0f); // Blue
+	// glVertex3f(-1.0f, -1.0f, -1.0f);
+	// glColor3f(0.0f, 1.0f, 0.0f); // Green
+	// glVertex3f(-1.0f, -1.0f, 1.0f);
+	// glEnd();		   // Done drawing the pyramid
 
-	drawGLScene();
+	// drawGLScene();
 
 	glutSwapBuffers(); // Swap the front and back frame buffers (double buffering)
 	// Update the rotational angle after each refresh [NEW]
 	anglePyramid += 0.2f;
-	angleCube -= 0.15f;
+	angleCube -= 0.8f;
 }
 
 /* Called back when timer expired [NEW] */
