@@ -1,9 +1,10 @@
-#include <GL/glut.h> // GLUT, include glu.h and gl.h
+#include "shape.h"
 /* Global variables */
 char title[] = "3D Shapes with animation";
 GLfloat anglePyramid = 0.0f; // Rotational angle for pyramid [NEW]
 GLfloat angleCube = 0.0f;	 // Rotational angle for cube [NEW]
-int refreshMills = 15;		 // refresh interval in milliseconds [NEW]
+GLfloat xrot = 0.0f, yrot = 0.0f, zrot = 0.0f;
+int refreshMills = 15; // refresh interval in milliseconds [NEW]
 /* Initialize OpenGL Graphics */
 void initGL()
 {
@@ -13,7 +14,95 @@ void initGL()
 	glDepthFunc(GL_LEQUAL);							   // Set the type of depth-test
 	glShadeModel(GL_SMOOTH);						   // Enable smooth shading
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST); // Nice perspective corrections
+	glEnable(GL_TEXTURE_2D);
 }
+
+int drawGLScene(GLvoid) // Here's Where We Do All The Drawing
+{
+	loadGLTextures();
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear The Screen And The Depth Buffer
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity(); // Reset The View
+	glTranslatef(0.0f, 0.0f, -5.0f);
+
+	glRotatef(xrot, 1.0f, 0.0f, 0.0f);
+	glRotatef(yrot, 0.0f, 1.0f, 0.0f);
+	glRotatef(zrot, 0.0f, 0.0f, 1.0f);
+
+	glBindTexture(GL_TEXTURE_2D, texture[0]);
+	glColor3f(1.0f, 1.0f, 1.0f);
+
+	glBegin(GL_QUADS);
+	// Front Face
+	glTexCoord2f(0.0f, 0.0f);
+	glVertex3f(-1.0f, -1.0f, 1.0f);
+	glTexCoord2f(1.0f, 0.0f);
+	glVertex3f(1.0f, -1.0f, 1.0f);
+	glTexCoord2f(1.0f, 1.0f);
+	glVertex3f(1.0f, 1.0f, 1.0f);
+	glTexCoord2f(0.0f, 1.0f);
+	glVertex3f(-1.0f, 1.0f, 1.0f);
+
+	// Back Face
+	glTexCoord2f(1.0f, 0.0f);
+	glVertex3f(-1.0f, -1.0f, -1.0f);
+	glTexCoord2f(1.0f, 1.0f);
+	glVertex3f(-1.0f, 1.0f, -1.0f);
+	glTexCoord2f(0.0f, 1.0f);
+	glVertex3f(1.0f, 1.0f, -1.0f);
+	glTexCoord2f(0.0f, 0.0f);
+	glVertex3f(1.0f, -1.0f, -1.0f);
+
+	// Top Face
+	glTexCoord2f(0.0f, 1.0f);
+	glVertex3f(-1.0f, 1.0f, -1.0f);
+	glTexCoord2f(0.0f, 0.0f);
+	glVertex3f(-1.0f, 1.0f, 1.0f);
+	glTexCoord2f(1.0f, 0.0f);
+	glVertex3f(1.0f, 1.0f, 1.0f);
+	glTexCoord2f(1.0f, 1.0f);
+	glVertex3f(1.0f, 1.0f, -1.0f);
+
+	// Bottom Face
+	glTexCoord2f(1.0f, 1.0f);
+	glVertex3f(-1.0f, -1.0f, -1.0f);
+	glTexCoord2f(0.0f, 1.0f);
+	glVertex3f(1.0f, -1.0f, -1.0f);
+	glTexCoord2f(0.0f, 0.0f);
+	glVertex3f(1.0f, -1.0f, 1.0f);
+	glTexCoord2f(1.0f, 0.0f);
+	glVertex3f(-1.0f, -1.0f, 1.0f);
+
+	// Right face
+	glTexCoord2f(1.0f, 0.0f);
+	glVertex3f(1.0f, -1.0f, -1.0f);
+	glTexCoord2f(1.0f, 1.0f);
+	glVertex3f(1.0f, 1.0f, -1.0f);
+	glTexCoord2f(0.0f, 1.0f);
+	glVertex3f(1.0f, 1.0f, 1.0f);
+	glTexCoord2f(0.0f, 0.0f);
+	glVertex3f(1.0f, -1.0f, 1.0f);
+
+	// Left Face
+	glTexCoord2f(0.0f, 0.0f);
+	glVertex3f(-1.0f, -1.0f, -1.0f);
+	glTexCoord2f(1.0f, 0.0f);
+	glVertex3f(-1.0f, -1.0f, 1.0f);
+	glTexCoord2f(1.0f, 1.0f);
+	glVertex3f(-1.0f, 1.0f, 1.0f);
+	glTexCoord2f(0.0f, 1.0f);
+	glVertex3f(-1.0f, 1.0f, -1.0f);
+
+	glEnd();
+
+	// glDisable(GL_TEXTURE_2D);
+
+	xrot += 0.3f;
+	yrot += 0.80f;
+	zrot += 0.4f;
+	return true;
+}
+
 /* Handler for window-repaint event. Called back when the window first appears and
  whenever the window needs to be re-painted. */
 void display()
@@ -97,11 +186,15 @@ void display()
 	glColor3f(0.0f, 1.0f, 0.0f); // Green
 	glVertex3f(-1.0f, -1.0f, 1.0f);
 	glEnd();		   // Done drawing the pyramid
+
+	drawGLScene();
+
 	glutSwapBuffers(); // Swap the front and back frame buffers (double buffering)
 	// Update the rotational angle after each refresh [NEW]
 	anglePyramid += 0.2f;
 	angleCube -= 0.15f;
 }
+
 /* Called back when timer expired [NEW] */
 void timer(int value)
 {
@@ -136,6 +229,6 @@ int main(int argc, char **argv)
 	glutReshapeFunc(reshape);		  // Register callback handler for window re-size event
 	initGL();						  // Our own OpenGL initialization
 	glutTimerFunc(0, timer, 0);		  // First timer call immediately [NEW]
-	glutMainLoop();					  // Enter the infinite event-processing loop
+	glutMainLoop(); // Enter the infinite event-processing loop
 	return 0;
 }
