@@ -1,6 +1,6 @@
 #include "shape.h"
 
-GLfloat angle = 0.0f;
+GLfloat angleSphere = 0.0f;
 
 class Sphere : Object {
 private:
@@ -35,15 +35,14 @@ public:
 	{
 		sectorStep = 2 * PI / sectorCount;
 		stackStep = PI / stackCount;
+		calculateVertices();
 	};
 
 	void draw()
 	{
-		calculateVertices();
-
 		glLoadIdentity();					// Reset the model-view matrix
 		glTranslatef(-1.5f, 0.0f, -7.0f);	// Move right and into the screen
-		glRotatef(angle, 1.0f, 1.0f, 1.0f); // Rotate about (1,1,1)-axis
+		glRotatef(angleSphere, 1.0f, 1.0f, 1.0f); // Rotate about (1,1,1)-axis
 		glColor3f(1.0f, 1.0f, 1.0f);
 
 		int k1, k2;
@@ -65,6 +64,6 @@ public:
 			}
 		}
 
-		angle -= angleRot;
+		angleSphere -= angleRot;
 	};
 };

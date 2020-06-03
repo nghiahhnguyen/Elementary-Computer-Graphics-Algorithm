@@ -28,12 +28,11 @@ public:
 };
 
 vector<int> textureList(6);
-
+random_device rd;
+mt19937 gen(rd());
+uniform_int_distribution<> dist(0, NUM_BMPS - 1);
 void generateRandomTextureLoading()
 {
-	random_device rd;
-	mt19937 gen(rd());
-	uniform_int_distribution<> dist(0, NUM_BMPS - 1);
 	for (int i = 0; i < 6; ++i) {
 		textureList[i] = dist(gen);
 	}

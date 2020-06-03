@@ -1,6 +1,7 @@
 #include "shape.h"
 #include "cube.cpp"
 #include "sphere.cpp"
+#include "circle.cpp"
 
 /* Global variables */
 char title[] = "3D Shapes with animation";
@@ -28,8 +29,11 @@ void display()
 	
 	// drawCube();
 
-	Sphere sphere(10, 10, 1, 0.8f);
-	sphere.draw();
+	// Sphere sphere(10, 10, 1, 0.8f);
+	// sphere.draw();
+
+	Circle circle(50, 1, 0.8f);
+	circle.draw();
 
 	glutSwapBuffers(); // Swap the front and back frame buffers (double buffering)
 	// Update the rotational angle after each refresh
