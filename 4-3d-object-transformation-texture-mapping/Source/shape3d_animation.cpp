@@ -1,9 +1,9 @@
 #include "shape.h"
+#include "cube.cpp"
+
 /* Global variables */
 char title[] = "3D Shapes with animation";
 GLfloat anglePyramid = 0.0f; // Rotational angle for pyramid [NEW]
-GLfloat angleCube = 0.0f;	 // Rotational angle for cube [NEW]
-GLfloat xrot = 0.0f, yrot = 0.0f, zrot = 0.0f;
 int refreshMills = 15; // refresh interval in milliseconds [NEW]
 /* Initialize OpenGL Graphics */
 void initGL()
@@ -17,92 +17,6 @@ void initGL()
 	glEnable(GL_TEXTURE_2D);
 }
 
-int drawGLScene(GLvoid) // Here's Where We Do All The Drawing
-{
-	loadGLTextures();
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear The Screen And The Depth Buffer
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity(); // Reset The View
-	glTranslatef(0.0f, 0.0f, -5.0f);
-
-	glRotatef(xrot, 1.0f, 0.0f, 0.0f);
-	glRotatef(yrot, 0.0f, 1.0f, 0.0f);
-	glRotatef(zrot, 0.0f, 0.0f, 1.0f);
-
-	glBindTexture(GL_TEXTURE_2D, texture[0]);
-	glColor3f(1.0f, 1.0f, 1.0f);
-
-	glBegin(GL_QUADS);
-	// Front Face
-	glTexCoord2f(0.0f, 0.0f);
-	glVertex3f(-1.0f, -1.0f, 1.0f);
-	glTexCoord2f(1.0f, 0.0f);
-	glVertex3f(1.0f, -1.0f, 1.0f);
-	glTexCoord2f(1.0f, 1.0f);
-	glVertex3f(1.0f, 1.0f, 1.0f);
-	glTexCoord2f(0.0f, 1.0f);
-	glVertex3f(-1.0f, 1.0f, 1.0f);
-
-	// Back Face
-	glTexCoord2f(1.0f, 0.0f);
-	glVertex3f(-1.0f, -1.0f, -1.0f);
-	glTexCoord2f(1.0f, 1.0f);
-	glVertex3f(-1.0f, 1.0f, -1.0f);
-	glTexCoord2f(0.0f, 1.0f);
-	glVertex3f(1.0f, 1.0f, -1.0f);
-	glTexCoord2f(0.0f, 0.0f);
-	glVertex3f(1.0f, -1.0f, -1.0f);
-
-	// Top Face
-	glTexCoord2f(0.0f, 1.0f);
-	glVertex3f(-1.0f, 1.0f, -1.0f);
-	glTexCoord2f(0.0f, 0.0f);
-	glVertex3f(-1.0f, 1.0f, 1.0f);
-	glTexCoord2f(1.0f, 0.0f);
-	glVertex3f(1.0f, 1.0f, 1.0f);
-	glTexCoord2f(1.0f, 1.0f);
-	glVertex3f(1.0f, 1.0f, -1.0f);
-
-	// Bottom Face
-	glTexCoord2f(1.0f, 1.0f);
-	glVertex3f(-1.0f, -1.0f, -1.0f);
-	glTexCoord2f(0.0f, 1.0f);
-	glVertex3f(1.0f, -1.0f, -1.0f);
-	glTexCoord2f(0.0f, 0.0f);
-	glVertex3f(1.0f, -1.0f, 1.0f);
-	glTexCoord2f(1.0f, 0.0f);
-	glVertex3f(-1.0f, -1.0f, 1.0f);
-
-	// Right face
-	glTexCoord2f(1.0f, 0.0f);
-	glVertex3f(1.0f, -1.0f, -1.0f);
-	glTexCoord2f(1.0f, 1.0f);
-	glVertex3f(1.0f, 1.0f, -1.0f);
-	glTexCoord2f(0.0f, 1.0f);
-	glVertex3f(1.0f, 1.0f, 1.0f);
-	glTexCoord2f(0.0f, 0.0f);
-	glVertex3f(1.0f, -1.0f, 1.0f);
-
-	// Left Face
-	glTexCoord2f(0.0f, 0.0f);
-	glVertex3f(-1.0f, -1.0f, -1.0f);
-	glTexCoord2f(1.0f, 0.0f);
-	glVertex3f(-1.0f, -1.0f, 1.0f);
-	glTexCoord2f(1.0f, 1.0f);
-	glVertex3f(-1.0f, 1.0f, 1.0f);
-	glTexCoord2f(0.0f, 1.0f);
-	glVertex3f(-1.0f, 1.0f, -1.0f);
-
-	glEnd();
-
-	glDisable(GL_TEXTURE_2D);
-
-	xrot += 0.3f;
-	yrot += 0.80f;
-	zrot += 0.4f;
-	return true;
-}
-
 /* Handler for window-repaint event. Called back when the window first appears and
  whenever the window needs to be re-painted. */
 void display()
@@ -111,29 +25,8 @@ void display()
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear color and depth buffers
 	glMatrixMode(GL_MODELVIEW);							// To operate on model-view matrix
-	// Render a color-cube consisting of 6 quads with different colors
-	glLoadIdentity();						// Reset the model-view matrix
-	glTranslatef(1.5f, 0.0f, -7.0f);		// Move right and into the screen
-	glRotatef(angleCube, 1.0f, 1.0f, 1.0f); // Rotate about (1,1,1)-axis [NEW]
-
-	// Top face (y = 1.0f)
-	// Define vertices in counter-clockwise (CCW) order with normal pointing out
-	mapTextureToSurface(textureList[0], 1.0f, 1.0f, -1.0f, -1.0f, 1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f);
-
-	// Bottom face (y = -1.0f)
-	mapTextureToSurface(textureList[1], 1.0f, -1.0f, 1.0f, -1.0f, -1.0f, 1.0f, -1.0f, -1.0f, -1.0f, 1.0f, -1.0f, -1.0f);
-
-	// Front face (z = 1.0f)
-	mapTextureToSurface(textureList[2], 1.0f, 1.0f, 1.0f, -1.0f, 1.0f, 1.0f, -1.0f, -1.0f, 1.0f, 1.0f, -1.0f, 1.0f);
-
-	// Back face (z = -1.0f)
-	mapTextureToSurface(textureList[3], 1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 1.0f, -1.0f, 1.0f, 1.0f, -1.0f);
-
-	// Left face (x = -1.0f)
-	mapTextureToSurface(textureList[4], -1.0f, 1.0f, 1.0f, -1.0f, 1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 1.0f);
-
-	// Right face (x = 1.0f)
-	mapTextureToSurface(textureList[5], 1.0f, 1.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f, -1.0f, 1.0f, 1.0f, -1.0f, -1.0f);
+	
+	drawCube();
 
 	// // Render a pyramid consists of 4 triangles
 	// glLoadIdentity();						   // Reset the model-view matrix

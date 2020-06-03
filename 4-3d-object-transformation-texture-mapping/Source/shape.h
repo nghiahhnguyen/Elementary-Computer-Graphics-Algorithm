@@ -4,8 +4,11 @@
 #include <string>
 #include <random>
 
+#pragma once
+
 #define NUM_BMPS 7
 #define INF 1e9
+
 GLuint texture[NUM_BMPS];
 
 using namespace std;
