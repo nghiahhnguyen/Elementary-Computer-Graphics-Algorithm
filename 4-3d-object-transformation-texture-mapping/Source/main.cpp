@@ -1,10 +1,10 @@
 #include "shape.h"
 #include "cube.cpp"
+#include "sphere.cpp"
 
 /* Global variables */
 char title[] = "3D Shapes with animation";
-GLfloat anglePyramid = 0.0f; // Rotational angle for pyramid [NEW]
-int refreshMills = 15; // refresh interval in milliseconds [NEW]
+int refreshMills = 15; // refresh interval in milliseconds
 /* Initialize OpenGL Graphics */
 void initGL()
 {
@@ -26,48 +26,13 @@ void display()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear color and depth buffers
 	glMatrixMode(GL_MODELVIEW);							// To operate on model-view matrix
 	
-	drawCube();
+	// drawCube();
 
-	// // Render a pyramid consists of 4 triangles
-	// glLoadIdentity();						   // Reset the model-view matrix
-	// glTranslatef(-1.5f, 0.0f, -6.0f);		   // Move left and into the screen
-	// glRotatef(anglePyramid, 1.0f, 1.0f, 0.0f); // Rotate about the (1,1,0)-axis [NEW]
-	// glBegin(GL_TRIANGLES);					   // Begin drawing the pyramid with 4 triangles
-	// // Front
-	// glColor3f(1.0f, 0.0f, 0.0f); // Red
-	// glVertex3f(0.0f, 1.0f, 0.0f);
-	// glColor3f(0.0f, 1.0f, 0.0f); // Green
-	// glVertex3f(-1.0f, -1.0f, 1.0f);
-	// glColor3f(0.0f, 0.0f, 1.0f); // Blue
-	// glVertex3f(1.0f, -1.0f, 1.0f);
-	// // Right
-	// glColor3f(1.0f, 0.0f, 0.0f); // Red
-	// glVertex3f(0.0f, 1.0f, 0.0f);
-	// glColor3f(0.0f, 0.0f, 1.0f); // Blue
-	// glVertex3f(1.0f, -1.0f, 1.0f);
-	// glColor3f(0.0f, 1.0f, 0.0f); // Green
-	// glVertex3f(1.0f, -1.0f, -1.0f);
-	// // Back
-	// glColor3f(1.0f, 0.0f, 0.0f); // Red
-	// glVertex3f(0.0f, 1.0f, 0.0f);
-	// glColor3f(0.0f, 1.0f, 0.0f); // Green
-	// glVertex3f(1.0f, -1.0f, -1.0f);
-	// glColor3f(0.0f, 0.0f, 1.0f); // Blue
-	// glVertex3f(-1.0f, -1.0f, -1.0f);
-	// // Left
-	// glColor3f(1.0f, 0.0f, 0.0f); // Red
-	// glVertex3f(0.0f, 1.0f, 0.0f);
-	// glColor3f(0.0f, 0.0f, 1.0f); // Blue
-	// glVertex3f(-1.0f, -1.0f, -1.0f);
-	// glColor3f(0.0f, 1.0f, 0.0f); // Green
-	// glVertex3f(-1.0f, -1.0f, 1.0f);
-	// glEnd();		   // Done drawing the pyramid
-
-	// drawGLScene();
+	Sphere sphere(10, 10, 1, 0.8f);
+	sphere.draw();
 
 	glutSwapBuffers(); // Swap the front and back frame buffers (double buffering)
-	// Update the rotational angle after each refresh [NEW]
-	anglePyramid += 0.2f;
+	// Update the rotational angle after each refresh
 	angleCube -= 0.8f;
 }
 
