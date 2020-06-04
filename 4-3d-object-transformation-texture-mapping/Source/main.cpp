@@ -32,7 +32,7 @@ void display()
 	// Sphere sphere(10, 10, 1, 0.8f);
 	// sphere.draw();
 
-	Circle circle(50, 1, 0.8f);
+	Circle circle(10, 1, 0.8f);
 	circle.draw();
 
 	glutSwapBuffers(); // Swap the front and back frame buffers (double buffering)
