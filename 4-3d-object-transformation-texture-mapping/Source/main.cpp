@@ -2,6 +2,7 @@
 #include "cube.cpp"
 #include "sphere.cpp"
 #include "circle.cpp"
+#include "cylinder.cpp"
 
 /* Global variables */
 char title[] = "3D Shapes with animation";
@@ -32,8 +33,11 @@ void display()
 	// Sphere sphere(10, 10, 1, 0.8f);
 	// sphere.draw();
 
-	Circle circle(10, 1, 0.8f);
-	circle.draw();
+	// Circle circle(10, 1, 0.8f);
+	// circle.draw();
+
+	Cylinder cylinder(10, 1, 1, 0.8f);
+	cylinder.draw();
 
 	glutSwapBuffers(); // Swap the front and back frame buffers (double buffering)
 	// Update the rotational angle after each refresh
@@ -67,7 +71,7 @@ int main(int argc, char **argv)
 {
 	glutInit(&argc, argv);			  // Initialize GLUT
 	glutInitDisplayMode(GLUT_DOUBLE); // Enable double buffered mode
-	glutInitWindowSize(640, 480);	  // Set the window's initial width & height
+	glutInitWindowSize(1080, 960);	  // Set the window's initial width & height
 	glutInitWindowPosition(50, 50);	  // Position the window's initial top-left corner
 	glutCreateWindow(title);		  // Create window with the given title
 	glutDisplayFunc(display);		  // Register callback handler for window re-paint event

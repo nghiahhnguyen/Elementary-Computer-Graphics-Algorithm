@@ -6,6 +6,8 @@
 #include <random>
 #include <stdio.h>
 #include <string>
+#include <iomanip>
+#include <iostream>
 
 #define NUM_BMPS 7
 #define INF 1e9
@@ -20,6 +22,12 @@ public:
 	Point(float x, float y, float z)
 		: x(x), y(y), z(z){};
 	float x, y, z;
+
+	friend ostream &operator<<(ostream &out, const Point &point)
+	{
+		out << point.x << ' ' << point.y << ' ' << point.z << endl;
+		return out;
+	};
 };
 
 class Object {
