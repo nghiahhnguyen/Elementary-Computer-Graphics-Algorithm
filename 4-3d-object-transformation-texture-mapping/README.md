@@ -1,40 +1,29 @@
-## Affline Transformation
+## Object transformation and Texture Mapping
 
-In this section, I'll be implementing some Affline Transformations. This program allows the user to create some polygons by a series of left mouse clicks followed by one middle mouse click. After that, the user can choose to select a polygon and do the following transformation with it:
+### Object transformation
 
-- Rotate left/right by 10 degrees
-- Zoom in/out by 10%
-- Move the image left/right/up/down by one pixel at a time
+- Circle: Iterate through points on the circumference of the circle at a constant step. After that, the primitives to draw are triangles between a pair of adjacent points and the center.
 
-So now I will illustrate how I implemented these functionalities. For Affline Transformations, there is a follow framework:
+- Cone: Iterate through points on the circumference of the circle at the bottom at a constant step. After that, the primitives to draw are triangles between a pair of adjacent points and the top of the cone. The circle at the bottom can be drawn like above.
 
-- Keep the coordinate of all vertices of the polygon
-- Suppose that we have a function f that transform the coordinates of each point to the new point according to the Transformation
-- Delete the old vertices from the buffer
-- Use the transformed vertices to draw the edges for this polygon
+- Cube: First identify the vertices at the 8 corners. After that draw quads based on the suitable combinations of size 4 of them for faces.
 
-That was the common framework for Affline Transformation. The transformation-dependent function f needs to be implemented differently for each transformation. Next I am going to describe them. For each transformation, we suppose that we have the coordinate of a point x, y, and we want to return new point x', y'.
-In the case of rotation/zooming, we need to go through to following steps:
+- Cylinder: Iterate throught points on the circumferense of the the bottom and top circles. After that, draw quads for the corresponding pairs of two adjacent points on the top and bottom circles.
 
-- Apply a transformation that move the center (xt, yt) of rotation/zoom to (0, 0):
-	- x' = x - xt, y' = y - yt
-- Apply the rotation/scaling transformation f' around (0, 0)
-	- For rotation, this transformation is:
-		- x' = x' ** cos(alpha) - y' ** sin(alpha)
-		- y' = x' ** sin(alpha) + y' ** cos(alpha)
-	- For scaling, this transformation is:
-		- x' = x' * (1 + scale)
-		- y' = y' * (1 - scale)
-- Apply a transformation that move the center of rotation/zoom back to where it was:
-	- x' = x' + xt, y' = y' + yt
+- Hyperboloid: Loop thourgh each sector, then on each sector, draw the set of points based on the parametric equations of a  hyperboloid:
+    - x = a * cosh(v) * cos(theta)
+    - y = c * sinh(v)
+	- z = b * cosh(v) * sin(theta)
+	
+- Paraboloid: Do the same as above, only the parametric equations is changed:
+    - x = r * cosf(theta)
+    - z = r * sinf(theta)
+    - y = a * x * x + b * z * z
+    
+- Sphere: Divide the sphere into tiles based on sectors and stacks. Then draw 2 triangles for each tile.
 
-In the case of moving the point (x, y) either up, down, left, right d pixels, we do the following:
+- Torus: For each flat ring on the torus, find the set of points on that ring. After that, for each 4 adjacents points draw a quad.
 
-- x' = x + dx, y' = y + dy
-
-with the value of (dx, dy) be:
-
-- Up: dx = 0, dy = -d
-- Down: dx = 0, dy = d
-- Left: dx = -d, dy = 0
-- Right: dx = d, dy = 0
+### Texture Mapping
+- I load the 7 bitmap files in the folder ./img to the memory as textures. The order of the files are random.
+- For each primitive (quad/triangle), I map a rando texture to that primitive.

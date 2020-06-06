@@ -4,10 +4,10 @@
 
 class Cube {
 protected:
-	int sideLength;
+	float sideLength;
 	GLfloat angleCube = 0.0f; // Rotational angle for cube
 public:
-	Cube(int sideLength)
+	Cube(float sideLength)
 		: sideLength(sideLength){};
 	virtual void draw()
 	{
@@ -18,22 +18,22 @@ public:
 
 		// Top face (y = 1.0f)
 		// Define vertices in counter-clockwise (CCW) order with normal pointing out
-		mapTextureToQuad(textureList[0], 1.0f, 1.0f, -1.0f, -1.0f, 1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f);
+		mapTextureToQuad(textureList[0], sideLength, sideLength, -sideLength, -sideLength, sideLength, -sideLength, -sideLength, sideLength, sideLength, sideLength, sideLength, sideLength);
 
-		// Bottom face (y = -1.0f)
-		mapTextureToQuad(textureList[1], 1.0f, -1.0f, 1.0f, -1.0f, -1.0f, 1.0f, -1.0f, -1.0f, -1.0f, 1.0f, -1.0f, -1.0f);
+		// Bottom face (y = -sideLength)
+		mapTextureToQuad(textureList[1], sideLength, -sideLength, sideLength, -sideLength, -sideLength, sideLength, -sideLength, -sideLength, -sideLength, sideLength, -sideLength, -sideLength);
 
-		// Front face (z = 1.0f)
-		mapTextureToQuad(textureList[2], 1.0f, 1.0f, 1.0f, -1.0f, 1.0f, 1.0f, -1.0f, -1.0f, 1.0f, 1.0f, -1.0f, 1.0f);
+		// Front face (z = sideLength)
+		mapTextureToQuad(textureList[2], sideLength, sideLength, sideLength, -sideLength, sideLength, sideLength, -sideLength, -sideLength, sideLength, sideLength, -sideLength, sideLength);
 
-		// Back face (z = -1.0f)
-		mapTextureToQuad(textureList[3], 1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 1.0f, -1.0f, 1.0f, 1.0f, -1.0f);
+		// Back face (z = -sideLength)
+		mapTextureToQuad(textureList[3], sideLength, -sideLength, -sideLength, -sideLength, -sideLength, -sideLength, -sideLength, sideLength, -sideLength, sideLength, sideLength, -sideLength);
 
-		// Left face (x = -1.0f)
-		mapTextureToQuad(textureList[4], -1.0f, 1.0f, 1.0f, -1.0f, 1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 1.0f);
+		// Left face (x = -sideLength)
+		mapTextureToQuad(textureList[4], -sideLength, sideLength, sideLength, -sideLength, sideLength, -sideLength, -sideLength, -sideLength, -sideLength, -sideLength, -sideLength, sideLength);
 
-		// Right face (x = 1.0f)
-		mapTextureToQuad(textureList[5], 1.0f, 1.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f, -1.0f, 1.0f, 1.0f, -1.0f, -1.0f);
+		// Right face (x = sideLength)
+		mapTextureToQuad(textureList[5], sideLength, sideLength, -sideLength, sideLength, sideLength, sideLength, sideLength, -sideLength, sideLength, sideLength, -sideLength, -sideLength);
 
 		angleCube += 0.8f;
 	}
