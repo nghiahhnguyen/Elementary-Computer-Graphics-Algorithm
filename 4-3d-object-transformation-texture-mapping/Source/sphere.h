@@ -42,7 +42,7 @@ public:
 	{
 		glLoadIdentity();					// Reset the model-view matrix
 		glTranslatef(-1.5f, 0.0f, -7.0f);	// Move right and into the screen
-		glRotatef(angleSphere, 1.0f, 1.0f, 1.0f); // Rotate about (1,1,1)-axis
+		glRotatef(angleSphere, 0.0f, 1.0f, 0.0f); // Rotate about (0, 1, 0)-axis
 		glColor3f(1.0f, 1.0f, 1.0f);
 
 		int k1, k2;

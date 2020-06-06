@@ -44,6 +44,6 @@ public:
 			mapTextureToTriangle(i % NUM_BMPS, a.x, a.y, a.z, b.x, b.y, b.z, 0, 0, 0);
 		}
 
-		angleCircle += angleRot;
+		angleCircle -= angleRot;
 	}
 };

@@ -58,6 +58,6 @@ public:
 			}
 		}
 
-		angleHyperboloid += angleRot;
+		angleHyperboloid -= angleRot;
 	}
 };

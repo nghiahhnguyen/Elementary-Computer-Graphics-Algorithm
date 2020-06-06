@@ -12,6 +12,7 @@
 char title[] = "3D Shapes with animation";
 int refreshMills = 150; // refresh interval in milliseconds
 Cube cube(1);
+Sphere sphere(10, 10, 1, 0.8f);
 Circle circle(30, 1, 0.8f);
 Hyperboloid hyperboloid(10, 1, 1, 1, 0.8f);
 Paraboloid paraboloid(10, 1, 1, 1, 0.8f);
@@ -39,7 +40,6 @@ void display()
 
 	// cube.draw();
 
-	// Sphere sphere(10, 10, 1, 0.8f);
 	// sphere.draw();
 
 	// circle.draw();
@@ -55,7 +55,7 @@ void display()
 
 	// hyperboloid.draw();
 
-	// paraboloid.draw();
+	paraboloid.draw();
 
 	glutSwapBuffers(); // Swap the front and back frame buffers (double buffering)
 }

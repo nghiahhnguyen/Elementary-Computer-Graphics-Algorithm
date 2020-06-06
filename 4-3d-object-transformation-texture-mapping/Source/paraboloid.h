@@ -57,6 +57,6 @@ public:
 			}
 		}
 
-		angleParaboloid += angleRot;
+		angleParaboloid -= angleRot;
 	}
 };
