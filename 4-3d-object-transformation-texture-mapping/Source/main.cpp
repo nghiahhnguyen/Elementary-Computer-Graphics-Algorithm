@@ -10,7 +10,7 @@
 /* Global variables */
 char title[] = "3D Shapes with animation";
 int refreshMills = 150; // refresh interval in milliseconds
-Hyperboloid hyperboloid(10, 1, 1, 0.8f);
+Hyperboloid hyperboloid(10, 1, 1, 1, 0.8f);
 
 /* Initialize OpenGL Graphics */
 void initGL()

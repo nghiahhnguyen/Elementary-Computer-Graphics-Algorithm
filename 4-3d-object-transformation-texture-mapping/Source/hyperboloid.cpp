@@ -5,31 +5,28 @@ GLfloat angleHyperboloid = 0.0f;
 
 class Hyperboloid : public Object {
 protected:
-protected:
-	int sectorCount,
-		radius;
-	float sectorStep, height;
+	int sectorCount;
+	float sectorStep, a, b, c;
 	GLfloat angleRot;
-	vector<Point> verticesBottom, verticesTop;
 	vector<vector<Point>> vertices;
 	void calculateVertices()
 	{
 		for (int i = 0; i < sectorCount; ++i) {
-			float x, y, z, theta, v, coeffA = 1, coeffB = 1, coeffC = 1;
+			float x, y, z, theta, v, a = 1, b = 1, c = 1;
 			for (float j = -1; j <= 1; j += 0.3) {
 				theta = i * sectorStep;
 				v = j;
-				x = coeffA * cosh(v) * cos(theta);
-				y = coeffC * sinh(v);
-				z = coeffB * cosh(v) * sin(theta);
+				x = a * cosh(v) * cos(theta);
+				y = c * sinh(v);
+				z = b * cosh(v) * sin(theta);
 				vertices[i].push_back(Point(x, y, z));
 			}
 		}
 	}
 
 public:
-	Hyperboloid(int sectorCnt, int r, int height, GLfloat angleRot)
-		: sectorCount(sectorCnt), radius(r), height(height), angleRot(angleRot)
+	Hyperboloid(int sectorCnt, float a, float b, float c, GLfloat angleRot)
+		: sectorCount(sectorCnt), a(a), b(b), c(c), angleRot(angleRot)
 	{
 		sectorStep = 2 * PI / sectorCount;
 		vertices.assign(sectorCount, vector<Point>());
