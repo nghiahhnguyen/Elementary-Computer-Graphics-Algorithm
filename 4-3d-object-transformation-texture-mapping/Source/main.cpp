@@ -4,6 +4,7 @@
 #include "circle.cpp"
 #include "cylinder.cpp"
 #include "cone.cpp"
+#include "torus.cpp"
 
 /* Global variables */
 char title[] = "3D Shapes with animation";
@@ -40,8 +41,11 @@ void display()
 	// Cylinder cylinder(10, 1, 1, 0.8f);
 	// cylinder.draw();
 
-	Cone cone(10, 1, 1, 0.8f);
-	cone.draw();
+	// Cone cone(10, 1, 1, 0.8f);
+	// cone.draw();
+
+	Torus torus(10, 10, 1, .1, 0.8f);
+	torus.draw();
 
 	glutSwapBuffers(); // Swap the front and back frame buffers (double buffering)
 	// Update the rotational angle after each refresh

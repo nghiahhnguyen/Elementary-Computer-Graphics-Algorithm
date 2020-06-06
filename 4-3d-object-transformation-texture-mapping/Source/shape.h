@@ -3,11 +3,11 @@
 #include "SOIL.h"
 #include <GL/glut.h>
 #include <cmath>
+#include <iomanip>
+#include <iostream>
 #include <random>
 #include <stdio.h>
 #include <string>
-#include <iomanip>
-#include <iostream>
 
 #define NUM_BMPS 7
 #define INF 1e9
@@ -21,7 +21,17 @@ class Point {
 public:
 	Point(float x, float y, float z)
 		: x(x), y(y), z(z){};
+	Point()
+		: x(0), y(0), z(0){};
 	float x, y, z;
+
+	Point &operator=(const Point &other)
+	{
+		this->x = other.x;
+		this->y = other.y;
+		this->z = other.z;
+		return *this;
+	}
 
 	friend ostream &operator<<(ostream &out, const Point &point)
 	{
@@ -68,7 +78,7 @@ int loadGLTextures() // Load Bitmaps And Convert To Textures
 	return true;
 }
 
-void mapTextureToQuad(int textureIdx, GLfloat x1, GLfloat y1, GLfloat z1, GLfloat x2, GLfloat y2, GLfloat z2, GLfloat x3, GLfloat y3, GLfloat z3, GLfloat x4 = INF, GLfloat y4 = INF, GLfloat z4 = INF)
+void mapTextureToQuad(int textureIdx, GLfloat x1, GLfloat y1, GLfloat z1, GLfloat x2, GLfloat y2, GLfloat z2, GLfloat x3, GLfloat y3, GLfloat z3, GLfloat x4, GLfloat y4, GLfloat z4)
 {
 	glEnable(GL_TEXTURE_2D);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
@@ -80,10 +90,26 @@ void mapTextureToQuad(int textureIdx, GLfloat x1, GLfloat y1, GLfloat z1, GLfloa
 	glVertex3f(x2, y2, z2);
 	glTexCoord2f(1, 0);
 	glVertex3f(x3, y3, z3);
-	if (x4 != INF) {
-		glTexCoord2f(0, 0);
-		glVertex3f(x4, y4, z4);
-	}
+	glTexCoord2f(0, 0);
+	glVertex3f(x4, y4, z4);
+	glEnd();
+	glDisable(GL_TEXTURE_2D);
+}
+
+void mapTextureToQuad(int textureIdx, Point a, Point b, Point c, Point d)
+{
+	glEnable(GL_TEXTURE_2D);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	glBindTexture(GL_TEXTURE_2D, texture[textureIdx]);
+	glBegin(GL_QUADS);
+	glTexCoord2f(0, 1);
+	glVertex3f(a.x, a.y, a.z);
+	glTexCoord2f(1, 1);
+	glVertex3f(b.x, b.y, b.z);
+	glTexCoord2f(1, 0);
+	glVertex3f(c.x, c.y, c.z);
+	glTexCoord2f(0, 0);
+	glVertex3f(d.x, d.y, d.z);
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
 }
