@@ -28,7 +28,7 @@ public:
 	{
 		glLoadIdentity();						 // Reset the model-view matrix
 		glTranslatef(-1.5f, 0.0f, -7.0f);		 // Move right and into the screen
-		glRotatef(angleTorus, 1.0f, 1.0f, 1.0f); // Rotate about (1,1,1)-axis
+		glRotatef(angleTorus, 0.0f, 0.0f, 1.0f); // Rotate about (1,1,1)-axis
 		glColor3f(1.0f, 1.0f, 1.0f);
 
 		int i, j, k;
@@ -66,6 +66,6 @@ public:
 			}
 		}
 
-		angleTorus += angleRot;
+		angleTorus -= angleRot;
 	}
 };

@@ -36,7 +36,8 @@ public:
 	{
 		glLoadIdentity();						  // Reset the model-view matrix
 		glTranslatef(-1.5f, 0.0f, -7.0f);		  // Move right and into the screen
-		glRotatef(angleCone, 1.0f, 1.0f, 1.0f); // Rotate about (1,1,1)-axis
+		glRotatef(-4 * PI, 1.0f, 0.0f, 0.0f);
+		glRotatef(angleCone, 0.0f, 1.0f, 0.0f); // Rotate about (0, 1, 0)-axis
 		glColor3f(1.0f, 1.0f, 1.0f);
 
 		for (int i = 0; i < sectorCount; ++i) {
