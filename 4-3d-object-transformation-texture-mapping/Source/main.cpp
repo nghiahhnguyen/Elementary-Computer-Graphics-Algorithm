@@ -4,7 +4,7 @@
 #include "cylinder.cpp"
 #include "hyperboloid.h"
 #include "shape.h"
-#include "sphere.cpp"
+#include "sphere.h"
 #include "torus.cpp"
 #include "paraboloid.h"
 
@@ -12,7 +12,7 @@
 char title[] = "3D Shapes with animation";
 int refreshMills = 150; // refresh interval in milliseconds
 Cube cube(1);
-Circle circle(10, 1, 0.8f);
+Circle circle(30, 1, 0.8f);
 Hyperboloid hyperboloid(10, 1, 1, 1, 0.8f);
 Paraboloid paraboloid(10, 1, 1, 1, 0.8f);
 
@@ -53,12 +53,11 @@ void display()
 	// Torus torus(10, 10, 1, .1, 0.8f);
 	// torus.draw();
 
-	hyperboloid.draw();
+	// hyperboloid.draw();
 
 	// paraboloid.draw();
 
 	glutSwapBuffers(); // Swap the front and back frame buffers (double buffering)
-	// Update the rotational angle after each refresh
 }
 
 /* Called back when timer expired [NEW] */

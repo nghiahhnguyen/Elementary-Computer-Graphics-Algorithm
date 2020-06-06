@@ -2,14 +2,13 @@
 
 #pragma once
 
-GLfloat angleCircle = 0.0f;
-
 class Circle : Object {
 protected:
 	int sectorCount,
 		radius;
 	float sectorStep;
-	GLfloat angleRot;
+	GLfloat angleRot,
+		angleCircle = 0.0f;
 	vector<Point> vertices;
 
 	virtual void calculateVertices()
@@ -18,8 +17,8 @@ protected:
 		for (int i = 0; i < sectorCount; ++i) {
 			sectorAngle = sectorStep * i;
 			x = radius * cosf(sectorAngle);
-			y = 0;
-			z = radius * sinf(sectorAngle);
+			y = radius * sinf(sectorAngle);
+			z = 0;
 			vertices.push_back(Point(x, y, z));
 		}
 	}
@@ -36,7 +35,7 @@ public:
 	{
 		glLoadIdentity();						  // Reset the model-view matrix
 		glTranslatef(-1.5f, 0.0f, -7.0f);		  // Move right and into the screen
-		glRotatef(angleCircle, 1.0f, 1.0f, 1.0f); // Rotate about (1,1,1)-axis
+		glRotatef(angleCircle, 0.0f, 0.0f, 1.0f); // Rotate about (1,1,1)-axis
 		glColor3f(1.0f, 1.0f, 1.0f);
 
 		for (int i = 0; i < sectorCount; ++i) {
