@@ -1,14 +1,17 @@
-#include "shape.h"
-#include "cube.cpp"
-#include "sphere.cpp"
 #include "circle.cpp"
-#include "cylinder.cpp"
 #include "cone.cpp"
+#include "cube.cpp"
+#include "cylinder.cpp"
+#include "hyperboloid.cpp"
+#include "shape.h"
+#include "sphere.cpp"
 #include "torus.cpp"
 
 /* Global variables */
 char title[] = "3D Shapes with animation";
-int refreshMills = 15; // refresh interval in milliseconds
+int refreshMills = 150; // refresh interval in milliseconds
+Hyperboloid hyperboloid(10, 1, 1, 0.8f);
+
 /* Initialize OpenGL Graphics */
 void initGL()
 {
@@ -29,7 +32,7 @@ void display()
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear color and depth buffers
 	glMatrixMode(GL_MODELVIEW);							// To operate on model-view matrix
-	
+
 	// drawCube();
 
 	// Sphere sphere(10, 10, 1, 0.8f);
@@ -44,8 +47,10 @@ void display()
 	// Cone cone(10, 1, 1, 0.8f);
 	// cone.draw();
 
-	Torus torus(10, 10, 1, .1, 0.8f);
-	torus.draw();
+	// Torus torus(10, 10, 1, .1, 0.8f);
+	// torus.draw();
+
+	hyperboloid.draw();
 
 	glutSwapBuffers(); // Swap the front and back frame buffers (double buffering)
 	// Update the rotational angle after each refresh
@@ -79,14 +84,14 @@ int main(int argc, char **argv)
 {
 	glutInit(&argc, argv);			  // Initialize GLUT
 	glutInitDisplayMode(GLUT_DOUBLE); // Enable double buffered mode
-	glutInitWindowSize(1080, 960);	  // Set the window's initial width & height
+	glutInitWindowSize(540, 480);	  // Set the window's initial width & height
 	glutInitWindowPosition(50, 50);	  // Position the window's initial top-left corner
 	glutCreateWindow(title);		  // Create window with the given title
 	glutDisplayFunc(display);		  // Register callback handler for window re-paint event
 	glutReshapeFunc(reshape);		  // Register callback handler for window re-size event
 	initGL();						  // Our own OpenGL initialization
 	glutTimerFunc(0, timer, 0);		  // First timer call immediately [NEW]
-	generateRandomTextureLoading();	// genrate random textures
+	generateRandomTextureLoading();	  // genrate random textures
 	glutMainLoop();					  // Enter the infinite event-processing loop
 	return 0;
 }
