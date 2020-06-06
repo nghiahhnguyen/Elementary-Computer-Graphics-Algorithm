@@ -5,14 +5,14 @@
 GLfloat angleCircle = 0.0f;
 
 class Circle : Object {
-private:
+protected:
 	int sectorCount,
 		radius;
 	float sectorStep;
 	GLfloat angleRot;
 	vector<Point> vertices;
 
-	void calculateVertices()
+	virtual void calculateVertices()
 	{
 		float x, y, z, sectorAngle;
 		for (int i = 0; i < sectorCount; ++i) {
@@ -32,7 +32,7 @@ public:
 		calculateVertices();
 	};
 
-	void draw()
+	virtual void draw()
 	{
 		glLoadIdentity();						  // Reset the model-view matrix
 		glTranslatef(-1.5f, 0.0f, -7.0f);		  // Move right and into the screen

@@ -1,16 +1,18 @@
 #include "circle.cpp"
 #include "cone.cpp"
-#include "cube.cpp"
+#include "cube.h"
 #include "cylinder.cpp"
 #include "hyperboloid.cpp"
 #include "shape.h"
 #include "sphere.cpp"
 #include "torus.cpp"
+#include "paraboloid.h"
 
 /* Global variables */
 char title[] = "3D Shapes with animation";
 int refreshMills = 150; // refresh interval in milliseconds
 Hyperboloid hyperboloid(10, 1, 1, 1, 0.8f);
+Paraboloid paraboloid(10, 1, 1, 1, 0.8f);
 
 /* Initialize OpenGL Graphics */
 void initGL()
@@ -50,7 +52,9 @@ void display()
 	// Torus torus(10, 10, 1, .1, 0.8f);
 	// torus.draw();
 
-	hyperboloid.draw();
+	// hyperboloid.draw();
+
+	paraboloid.draw();
 
 	glutSwapBuffers(); // Swap the front and back frame buffers (double buffering)
 	// Update the rotational angle after each refresh
