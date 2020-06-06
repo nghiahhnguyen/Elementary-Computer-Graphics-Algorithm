@@ -2,7 +2,7 @@
 #include "cone.cpp"
 #include "cube.h"
 #include "cylinder.cpp"
-#include "hyperboloid.cpp"
+#include "hyperboloid.h"
 #include "shape.h"
 #include "sphere.cpp"
 #include "torus.cpp"
@@ -37,7 +37,7 @@ void display()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear color and depth buffers
 	glMatrixMode(GL_MODELVIEW);							// To operate on model-view matrix
 
-	cube.draw();
+	// cube.draw();
 
 	// Sphere sphere(10, 10, 1, 0.8f);
 	// sphere.draw();
@@ -53,7 +53,7 @@ void display()
 	// Torus torus(10, 10, 1, .1, 0.8f);
 	// torus.draw();
 
-	// hyperboloid.draw();
+	hyperboloid.draw();
 
 	// paraboloid.draw();
 
