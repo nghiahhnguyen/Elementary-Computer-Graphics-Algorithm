@@ -1,18 +1,19 @@
 #include "circle.h"
 #include "cone.cpp"
 #include "cube.h"
-#include "cylinder.cpp"
+#include "cylinder.h"
 #include "hyperboloid.h"
+#include "paraboloid.h"
 #include "shape.h"
 #include "sphere.h"
 #include "torus.cpp"
-#include "paraboloid.h"
 
 /* Global variables */
 char title[] = "3D Shapes with animation";
 int refreshMills = 150; // refresh interval in milliseconds
 Cube cube(1);
 Sphere sphere(10, 10, 1, 0.8f);
+Cylinder cylinder(30, 1, 1, 0.8f);
 Circle circle(30, 1, 0.8f);
 Hyperboloid hyperboloid(10, 1, 1, 1, 0.8f);
 Paraboloid paraboloid(10, 1, 1, 1, 0.8f);
@@ -44,8 +45,7 @@ void display()
 
 	// circle.draw();
 
-	// Cylinder cylinder(10, 1, 1, 0.8f);
-	// cylinder.draw();
+	cylinder.draw();
 
 	// Cone cone(10, 1, 1, 0.8f);
 	// cone.draw();
@@ -55,7 +55,7 @@ void display()
 
 	// hyperboloid.draw();
 
-	paraboloid.draw();
+	// paraboloid.draw();
 
 	glutSwapBuffers(); // Swap the front and back frame buffers (double buffering)
 }

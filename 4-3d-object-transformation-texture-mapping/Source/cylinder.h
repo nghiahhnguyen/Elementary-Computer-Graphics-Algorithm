@@ -47,8 +47,9 @@ public:
 			Point c = verticesTop[i],
 				  d = verticesTop[(i + 1) % int(verticesTop.size())];
 			mapTextureToTriangle((i + 1) % NUM_BMPS, c.x, c.y, c.z, d.x, d.y, d.z, 0, height, 0);
+			mapTextureToQuad((i + 2) % NUM_BMPS, a.x, a.y, a.z, b.x, b.y, b.z, d.x, d.y, d.z, c.x, c.y, c.z);
 		}
 
-		angleCylinder += angleRot;
+		angleCylinder -= angleRot;
 	}
 };
