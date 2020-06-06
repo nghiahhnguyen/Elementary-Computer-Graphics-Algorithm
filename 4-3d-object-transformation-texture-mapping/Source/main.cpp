@@ -1,4 +1,4 @@
-#include "circle.cpp"
+#include "circle.h"
 #include "cone.cpp"
 #include "cube.h"
 #include "cylinder.cpp"
@@ -11,6 +11,8 @@
 /* Global variables */
 char title[] = "3D Shapes with animation";
 int refreshMills = 150; // refresh interval in milliseconds
+Cube cube(1);
+Circle circle(10, 1, 0.8f);
 Hyperboloid hyperboloid(10, 1, 1, 1, 0.8f);
 Paraboloid paraboloid(10, 1, 1, 1, 0.8f);
 
@@ -35,12 +37,11 @@ void display()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear color and depth buffers
 	glMatrixMode(GL_MODELVIEW);							// To operate on model-view matrix
 
-	// drawCube();
+	cube.draw();
 
 	// Sphere sphere(10, 10, 1, 0.8f);
 	// sphere.draw();
 
-	// Circle circle(10, 1, 0.8f);
 	// circle.draw();
 
 	// Cylinder cylinder(10, 1, 1, 0.8f);
@@ -54,11 +55,10 @@ void display()
 
 	// hyperboloid.draw();
 
-	paraboloid.draw();
+	// paraboloid.draw();
 
 	glutSwapBuffers(); // Swap the front and back frame buffers (double buffering)
 	// Update the rotational angle after each refresh
-	angleCube -= 0.8f;
 }
 
 /* Called back when timer expired [NEW] */
