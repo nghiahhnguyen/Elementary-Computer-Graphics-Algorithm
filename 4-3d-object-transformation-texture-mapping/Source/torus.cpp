@@ -16,29 +16,12 @@ private:
 	vector<Point> ringCenters;
 	vector<vector<Point>> vertices;
 
-	void calculateVertices()
-	{
-		float x, y, z, sectorAngle, innerSectorAngle;
-		for (int i = 0; i < sectorCount; ++i) {
-			sectorAngle = sectorStep * i;
-			x = minorRadius * cosf(sectorAngle);
-			y = 0;
-			z = minorRadius * sinf(sectorAngle);
-			ringCenters.push_back(Point(x, y, z));
-			// for (int j = 0; j < sectorCount; ++j) {
-			// 	innerSectorAngle = sectorStep * j;
-			// 	x =
-			// }
-		}
-	}
-
 public:
 	Torus(int sectorCnt, int innerSectorCnt, float R, float r, GLfloat angleRot)
 		: sectorCount(sectorCnt), minorRadius(r), angleRot(angleRot), majorRadius(R), innerSectorCount(innerSectorCnt)
 	{
 		sectorStep = 2 * PI / sectorCount;
 		innerSectorStep = 2 * PI / innerSectorCount;
-		calculateVertices();
 	};
 
 	void draw()
@@ -53,9 +36,11 @@ public:
 
 		twopi = 2 * PI;
 		Point high, low, prevHigh, prevLow;
+		// for each ring
 		for (i = 0; i < sectorCount; i++) {
-			// glBegin(GL_QUAD_STRIP);
+			// for pair of points on the ring
 			for (j = 0; j <= innerSectorCount; j++) {
+				// calculate 2 points
 				s = (i + 1) % sectorCount;
 				t = j % innerSectorCount;
 
@@ -71,15 +56,14 @@ public:
 				y = (majorRadius + minorRadius * cos(s * sectorStep)) * sin(t * innerSectorStep);
 				z = minorRadius * sin(s * sectorStep);
 				low = Point(x, y, z);
-				// glVertex3f(x, y, z);
 
+				// draw a quad between these two points and the points from the previous iteration of j
 				if (i != 0) {
 					mapTextureToQuad((i + j) % NUM_BMPS, prevLow, prevHigh, high, low);
 				}
 				prevHigh = high;
 				prevLow = low;
 			}
-			// glEnd();
 		}
 
 		angleTorus += angleRot;
