@@ -107,7 +107,7 @@ void scanLineColoring(RGBColor fillingColor)
 				}
 			}
 
-			// cerase edges which is finished with its drawing
+			// erase edges which is finished with its drawing
 			cur = activeList.begin();
 			while (cur != activeList.end()) {
 				if (yMax[*cur] == scanY) {
