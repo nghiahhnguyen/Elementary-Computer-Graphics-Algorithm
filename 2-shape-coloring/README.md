@@ -4,11 +4,11 @@
 
 ## Color Filling Algorithms
 
-### Flood Filling
+### Boundary Filling
 - The problem with flood filling is that its recursive nature is prone to stack overflow error. In order to solve this problem, I simulate the algorithm's DFS strategy with a stack:
 
 ```cpp
-static void floodFillColoring(int x, int y)
+static void boundaryFillColoring(int x, int y)
 	{
 		RGBColor borderColor(0, 0, 0);
 		stack<pair<int, int>> S;
