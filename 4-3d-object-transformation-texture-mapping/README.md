@@ -13,11 +13,11 @@
 - Hyperboloid: Loop thourgh each sector, then on each sector, draw the set of points based on the parametric equations of a  hyperboloid:
     - x = a * cosh(v) * cos(theta)
     - y = c * sinh(v)
-	- z = b * cosh(v) * sin(theta)
+	- z = b * cosh(v) * sinh(theta)
 	
 - Paraboloid: Do the same as above, only the parametric equations is changed:
-    - x = r * cosf(theta)
-    - z = r * sinf(theta)
+    - x = r * cosh(theta)
+    - z = r * sinh(theta)
     - y = a * x * x + b * z * z
     
 - Sphere: Divide the sphere into tiles based on sectors and stacks. Then draw 2 triangles for each tile.
@@ -26,4 +26,4 @@
 
 ### Texture Mapping
 - I load the 7 bitmap files in the folder ./img to the memory as textures. The order of the files are random.
-- For each primitive (quad/triangle), I map a rando texture to that primitive.
+- For each primitive (quad/triangle), I map a random texture to that primitive.
