@@ -1,4 +1,4 @@
-**Remark: This code is written is tested on Ubuntu 19.10 (using KDE as DE), so it is not always portable to other OSs.**
+**Remark: This code is written is tested on Ubuntu 19.10 (using KDE as DE), so it is not always portable to other OSes.**
 
 # 1. Shape Drawing Benchmark
 This is a simple shape drawing benchmark in which I test the implementation of the MidPoint algorithms compared to OpenGL implementation
